@@ -1,0 +1,221 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Slot Kakek Zeus — Demo</title>
+<meta name="description" content="Slot demo Kakek Zeus — hiburan saja, bukan untuk perjudian uang nyata." />
+<style>
+  :root{
+    --bg:#041021;
+    --card:#09233a;
+    --accent:#ffd24d;
+    --accent2:#7be0ff;
+    --muted:#9fb4c9;
+    font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, Arial;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:radial-gradient(circle at 20% 10%, #083149 0%, var(--bg) 45%), #000;color:#fff;display:flex;align-items:center;justify-content:center;min-height:100vh}
+  .wrap{width:360px;padding:18px;border-radius:14px;background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));box-shadow:0 12px 40px rgba(0,0,0,0.6);border:1px solid rgba(255,255,255,0.03)}
+  header{display:flex;align-items:center;gap:12px}
+  .logo{width:56px;height:56px;border-radius:12px;background:linear-gradient(135deg,#ffe27a,#ffd24d);display:flex;align-items:center;justify-content:center;color:#072; font-weight:800; font-size:18px; color:#1b1b1b}
+  h1{margin:0;font-size:18px;color:var(--accent)}
+  p.lead{margin:0;color:var(--muted);font-size:13px}
+  .machine{display:flex;gap:8px;justify-content:center;margin:16px 0}
+  .reel{width:92px;height:92px;border-radius:12px;background:linear-gradient(180deg,#051827,#062a3e);border:2px solid rgba(255,255,255,0.03);overflow:hidden;display:flex;align-items:center;justify-content:center;font-size:36px}
+  .symbols{display:flex;flex-direction:column;align-items:center;transition:transform 700ms cubic-bezier(.2,.8,.2,1)}
+  .symbol{width:100%;height:92px;display:flex;align-items:center;justify-content:center;font-size:36px}
+  .controls{display:flex;flex-direction:column;gap:10px}
+  .row{display:flex;gap:8px}
+  button{padding:10px 12px;border-radius:10px;border:none;background:var(--accent);color:#111;font-weight:800;cursor:pointer}
+  .btn-ghost{background:transparent;border:1px solid rgba(255,255,255,0.06);color:#fff;padding:8px 10px;border-radius:10px}
+  .info{display:flex;justify-content:space-between;align-items:center;margin-top:8px;font-size:14px;color:var(--muted)}
+  .center{text-align:center}
+  .small{font-size:13px;color:var(--muted)}
+  .credit{font-weight:800;color:#fff}
+  footer{font-size:12px;color:var(--muted);text-align:center;margin-top:12px}
+  .lightning{position:relative}
+  .glow{position:absolute;inset:-40%;filter:blur(40px);opacity:0.12;pointer-events:none}
+  .win{animation:pop 500ms ease}
+  @keyframes pop{0%{transform:scale(1)}50%{transform:scale(1.08)}100%{transform:scale(1)}}
+  @media (max-width:420px){
+    .wrap{width:94%}
+    .reel{width:78px;height:78px;font-size:30px}
+    .symbol{height:78px}
+  }
+</style>
+</head>
+<body>
+<div class="wrap" role="application" aria-label="Slot Kakek Zeus">
+  <header>
+    <div class="logo">⚡Ζ</div>
+    <div>
+      <h1>Kakek Zeus Slot</h1>
+      <p class="lead">Demo: hiburan & latihan — bukan untuk taruhan uang nyata</p>
+    </div>
+  </header>
+
+  <div class="machine lightning" aria-hidden="false">
+    <div class="glow" style="background:radial-gradient(circle,#ffd24d 0%,transparent 40%);"></div>
+    <div class="reel" id="reel0"><div class="symbols" id="symbols0"></div></div>
+    <div class="reel" id="reel1"><div class="symbols" id="symbols1"></div></div>
+    <div class="reel" id="reel2"><div class="symbols" id="symbols2"></div></div>
+  </div>
+
+  <div class="center small" style="margin-bottom:8px">Cocokkan 3 simbol mitologi untuk jackpot. Setiap spin biaya taruhan.</div>
+
+  <div class="controls">
+    <div class="row">
+      <button id="spinBtn" aria-label="Spin">⚡ SPIN</button>
+      <button id="autoplay" class="btn-ghost" aria-pressed="false">AUTO</button>
+      <button id="reset" class="btn-ghost">RESET</button>
+    </div>
+
+    <div class="row" style="margin-top:8px;">
+      <div class="info"><div>Saldo: <span class="credit" id="credits">200</span></div><div class="small">Taruhan: <span id="bet">20</span></div></div>
+    </div>
+
+    <div class="row" style="margin-top:8px;">
+      <button id="increase" class="btn-ghost">+ Taruhan</button>
+      <button id="decrease" class="btn-ghost">- Taruhan</button>
+    </div>
+
+    <div class="row" style="margin-top:8px;">
+      <div class="center small" id="result">Selamat datang, cucu Dewa! Tekan SPIN ⚡</div>
+    </div>
+
+  </div>
+
+  <footer>Demo slot “Kakek Zeus” — Mainkan untuk hiburan. Jangan gunakan uang asli.</footer>
+</div>
+
+<script>
+(function(){
+  // Zeus-themed symbols and weights
+  const symbols = ['⚡','🪙','🦅','🍇','🏺','7️⃣'];
+  const weights = {'⚡':12,'🪙':30,'🦅':18,'🍇':20,'🏺':12,'7️⃣':6};
+  const weighted = [];
+  symbols.forEach(s => { for(let i=0;i<weights[s];i++) weighted.push(s); });
+
+  const reels = [document.getElementById('symbols0'), document.getElementById('symbols1'), document.getElementById('symbols2')];
+  const reelEls = [document.getElementById('reel0'), document.getElementById('reel1'), document.getElementById('reel2')];
+  const creditsEl = document.getElementById('credits');
+  const resultEl = document.getElementById('result');
+  const spinBtn = document.getElementById('spinBtn');
+  const autoplayBtn = document.getElementById('autoplay');
+  const resetBtn = document.getElementById('reset');
+  const incBtn = document.getElementById('increase');
+  const decBtn = document.getElementById('decrease');
+
+  // state
+  let credits = parseInt(localStorage.getItem('kz_credits')||'200',10);
+  let bet = parseInt(localStorage.getItem('kz_bet')||'20',10);
+  let auto = false;
+  let spinning = false;
+
+  function renderReelContent(){
+    for(let r=0;r<3;r++){
+      const el = reels[r];
+      el.innerHTML='';
+      for(let i=0;i<12;i++){
+        const sym = weighted[Math.floor(Math.random()*weighted.length)];
+        const div = document.createElement('div'); div.className='symbol'; div.textContent = sym;
+        el.appendChild(div);
+      }
+    }
+  }
+  function updateUI(){ creditsEl.textContent = credits; document.getElementById('bet').textContent = bet; }
+
+  function pickRandomSymbol(){ return weighted[Math.floor(Math.random()*weighted.length)]; }
+
+  function spinOnce(){
+    if(spinning) return;
+    if(credits < bet){ resultEl.textContent = 'Saldo tidak cukup untuk taruhan.'; return; }
+    spinning = true;
+    credits -= bet; updateUI(); resultEl.textContent = 'Kakek Zeus memutar petir...';
+
+    const targets = [pickRandomSymbol(), pickRandomSymbol(), pickRandomSymbol()];
+    // rebuild reels ensuring target in middle
+    for(let r=0;r<3;r++){
+      const el = reels[r]; el.innerHTML='';
+      const middleIndex = 5;
+      for(let i=0;i<12;i++){
+        const div = document.createElement('div'); div.className='symbol';
+        if(i===middleIndex) div.textContent = targets[r]; else div.textContent = weighted[Math.floor(Math.random()*weighted.length)];
+        el.appendChild(div);
+      }
+    }
+
+    const symbolHeight = reels[0].querySelector('.symbol').offsetHeight || 92;
+    const delays = [0,260,520];
+    const durations = [900,1200,1500];
+
+    for(let r=0;r<3;r++){
+      const el = reels[r];
+      el.style.transition = 'transform ' + durations[r] + 'ms cubic-bezier(.2,.8,.2,1)';
+      const translateY = - (symbolHeight * 5);
+      ((rr,trans,delay)=>{ setTimeout(()=>{ rr.style.transform = 'translateY(' + trans + 'px)'; }, delay); })(el, translateY, delays[r]);
+    }
+
+    const totalWait = Math.max(...durations) + Math.max(...delays) + 120;
+    setTimeout(()=> {
+      spinning = false;
+      const outcome = [];
+      for(let r=0;r<3;r++){ outcome.push(reels[r].children[5].textContent); }
+      evaluateOutcome(outcome);
+      localStorage.setItem('kz_credits', credits);
+      localStorage.setItem('kz_bet', bet);
+      updateUI();
+      if(auto && credits>=bet) setTimeout(spinOnce, 700);
+      else if(auto){ auto=false; autoplayBtn.textContent='AUTO'; autoplayBtn.setAttribute('aria-pressed','false'); }
+    }, totalWait);
+  }
+
+  function evaluateOutcome(out){
+    const [a,b,c] = out;
+    // three-of-a-kind payouts based on rarity
+    if(a===b && b===c){
+      const multipliers = {'⚡':30,'🪙':6,'🦅':10,'🍇':8,'🏺':12,'7️⃣':50};
+      const mul = multipliers[a] || 5;
+      const win = bet * mul;
+      credits += win;
+      resultEl.innerHTML = `✨ JACKPOT! ${out.join(' ')} — Menang ${win} kredit (x${mul})`;
+      triggerWinEffect();
+    } else if(a===b || b===c || a===c){
+      const win = Math.floor(bet * 1.6);
+      credits += win;
+      resultEl.innerHTML = `✨ Kecil! ${out.join(' ')} — Menang ${win} kredit`;
+      triggerWinEffect();
+    } else {
+      resultEl.textContent = `Coba lagi — ${out.join(' ')}`;
+    }
+  }
+
+  function triggerWinEffect(){
+    reelEls.forEach(el=>{ el.classList.add('win'); setTimeout(()=>el.classList.remove('win'),700); });
+    // light flash
+    document.querySelector('.glow').style.opacity = 0.6;
+    setTimeout(()=>document.querySelector('.glow').style.opacity = 0.12, 500);
+  }
+
+  // event handlers
+  spinBtn.addEventListener('click', spinOnce);
+  autoplayBtn.addEventListener('click', ()=>{
+    auto = !auto;
+    autoplayBtn.textContent = auto ? 'STOP' : 'AUTO';
+    autoplayBtn.setAttribute('aria-pressed', auto ? 'true' : 'false');
+    if(auto && !spinning) spinOnce();
+  });
+  resetBtn.addEventListener('click', ()=>{
+    credits = 200; bet = 20; localStorage.removeItem('kz_credits'); localStorage.removeItem('kz_bet'); updateUI(); resultEl.textContent='Saldo direset ke 200';
+  });
+  incBtn.addEventListener('click', ()=>{ bet = Math.min(credits, bet+10); updateUI(); localStorage.setItem('kz_bet', bet); });
+  decBtn.addEventListener('click', ()=>{ bet = Math.max(1, bet-10); updateUI(); localStorage.setItem('kz_bet', bet); });
+
+  // initial
+  renderReelContent();
+  updateUI();
+})();
+</script>
+</body>
+</html>
