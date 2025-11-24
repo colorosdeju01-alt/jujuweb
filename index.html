@@ -1,146 +1,165 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="id">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Daftar Academy Crypto</title>
-
-<style>
-    body {
-        margin: 0;
-        font-family: Arial, sans-serif;
-        background: #0b1627;
-        color: white;
-        display: flex;
-        justify-content: center;
-        padding: 25px;
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Jasa & Kursus — JujuWebPro</title>
+  <meta name="description" content="Jasa pembuatan website & Academy Crypto. Chat WA untuk konsultasi & order. Harga mulai Rp300.000" />
+  <style>
+    :root{
+      --bg:#071627; --card:#0f2130; --accent:#00d1ff; --muted:#9fb4c9;
+      font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, Arial;
     }
-    .container {
-        width: 100%;
-        max-width: 430px;
-        background: #132238;
-        padding: 22px;
-        border-radius: 16px;
-        border: 1px solid #00eaff55;
-        box-shadow: 0 0 25px rgba(0,255,255,0.1);
-    }
-    h2 {
-        text-align: center;
-        color: #00eaff;
-        margin-bottom: 4px;
-    }
-    p {
-        text-align: center;
-        font-size: 14px;
-        color: #9fb4ca;
-    }
-    label {
-        display: block;
-        font-size: 14px;
-        margin-top: 12px;
-    }
-    input, select, textarea {
-        width: 100%;
-        margin-top: 6px;
-        padding: 11px;
-        border-radius: 10px;
-        background: #0a1423;
-        border: 1px solid #00eaff44;
-        color: white;
-        outline: none;
-    }
-    textarea {
-        min-height: 70px;
-    }
-    button {
-        width: 100%;
-        margin-top: 18px;
-        padding: 13px;
-        background: #00eaff;
-        border: none;
-        border-radius: 10px;
-        font-weight: bold;
-        font-size: 16px;
-        color: #000;
-        cursor: pointer;
-    }
-    button:hover {
-        opacity: .9;
-    }
-    .wa-btn {
-        background: transparent;
-        border: 1px solid #00eaff;
-        color: #00eaff;
-    }
-    footer {
-        text-align: center;
-        font-size: 11px;
-        opacity: .7;
-        margin-top: 18px;
-    }
-</style>
-
+    *{box-sizing:border-box}
+    body{margin:0;background:linear-gradient(180deg,#041426,#071a2b);color:#fff}
+    .wrap{max-width:980px;margin:28px auto;padding:18px}
+    header{display:flex;align-items:center;justify-content:space-between;gap:12px}
+    .brand{display:flex;align-items:center;gap:12px}
+    .logo{width:56px;height:56px;border-radius:10px;background:linear-gradient(90deg,var(--accent),#7bf1c6);display:flex;align-items:center;justify-content:center;color:#012;font-weight:700}
+    h1{margin:0;font-size:24px}
+    p.lead{color:var(--muted);margin:6px 0 0}
+    .hero{display:flex;gap:20px;margin-top:22px;align-items:center}
+    .left{flex:1}
+    .right{width:340px}
+    .card{background:var(--card);padding:18px;border-radius:12px;border:1px solid rgba(255,255,255,0.03)}
+    .btn{display:inline-block;background:var(--accent);color:#012;padding:12px 16px;border-radius:10px;text-decoration:none;font-weight:700}
+    .ghost{background:transparent;border:1px solid rgba(255,255,255,0.06);color:var(--muted)}
+    .features{display:flex;gap:12px;margin-top:18px;flex-wrap:wrap}
+    .feat{background:rgba(255,255,255,0.02);padding:10px;border-radius:8px;min-width:150px}
+    .prices{display:flex;gap:12px;margin-top:18px;flex-wrap:wrap}
+    .price{background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));padding:14px;border-radius:10px;min-width:150px;text-align:center;border:1px solid rgba(0,0,0,0.3)}
+    .muted{color:var(--muted)}
+    .trust{display:flex;gap:8px;align-items:center;margin-top:12px}
+    footer{text-align:center;padding:26px;color:var(--muted)}
+    form label{display:block;font-size:13px;margin-top:10px;color:var(--muted)}
+    input,textarea{width:100%;padding:10px;border-radius:8px;border:1px solid rgba(255,255,255,0.04);background:transparent;color:#fff}
+    @media(max-width:900px){.hero{flex-direction:column}.right{width:100%}}
+  </style>
 </head>
 <body>
+  <div class="wrap">
+    <header>
+      <div class="brand">
+        <div class="logo">JW</div>
+        <div>
+          <h1>juj uwebpro</h1>
+          <p class="lead">Website & Academy Crypto — mulai Rp 300.000</p>
+        </div>
+      </div>
+      <div>
+        <!-- Ganti link WA di bawah -->
+        <a class="btn" href="https://wa.me/6282269238794?text=Halo%20JujuWebPro%2C%20saya%20mau%20konsultasi" target="_blank">Chat WA Sekarang</a>
+      </div>
+    </header>
 
-<div class="container">
-    <h2>Academy Crypto 🚀</h2>
-    <p>Daftar sekarang untuk bergabung<br>belajar crypto dari nol hingga mahir!</p>
+    <section class="hero">
+      <div class="left">
+        <div class="card">
+          <h2>Butuh website / chatbot untuk usaha?</h2>
+          <p class="muted">Kami bantu UMKM & kreator punya website profesional + chatbot otomatis untuk jualan 24/7.</p>
 
-    <form id="formDaftar" onsubmit="return daftar(event)">
-        <label>Nama Lengkap</label>
-        <input type="text" id="nama" required>
+          <div class="features">
+            <div class="feat"><strong>✅ Cepat (1-3 hari)</strong><div class="muted">Landing page siap pakai</div></div>
+            <div class="feat"><strong>💬 Order via WA</strong><div class="muted">Langsung chat, cepat closing</div></div>
+            <div class="feat"><strong>🔒 Aman</strong><div class="muted">Dukungan & update</div></div>
+          </div>
 
-        <label>Nomor WhatsApp</label>
-        <input type="text" id="wa" placeholder="08xxxxxxxxxx" required>
+          <div class="prices">
+            <div class="price">
+              <strong>Basic</strong>
+              <div class="muted">Rp 300.000</div>
+              <div style="margin-top:8px"><a class="btn" href="https://wa.me/6282269238794?text=Saya%20pesan%20paket%20Basic" target="_blank">Pesan</a></div>
+            </div>
+            <div class="price">
+              <strong>Pro</strong>
+              <div class="muted">Rp 700.000</div>
+              <div style="margin-top:8px"><a class="btn" href="https://wa.me/6282269238794?text=Saya%20pesan%20paket%20Pro" target="_blank">Pesan</a></div>
+            </div>
+            <div class="price">
+              <strong>Chatbot</strong>
+              <div class="muted">Mulai Rp 150.000/bln</div>
+              <div style="margin-top:8px"><a class="btn" href="https://wa.me/6282269238794?text=Info%20paket%20Chatbot" target="_blank">Info</a></div>
+            </div>
+          </div>
 
-        <label>Email Aktif</label>
-        <input type="email" id="email" required>
+          <div style="margin-top:16px">
+            <a class="ghost" href="#about">Lihat detail layanan</a>
+          </div>
+        </div>
 
-        <label>Level Pengalaman</label>
-        <select id="level" required>
-            <option value="">Pilih Level</option>
-            <option>Pemula</option>
-            <option>Menengah</option>
-            <option>Lanjutan</option>
-        </select>
+        <div id="about" class="card" style="margin-top:12px">
+          <h3>Kenapa pilih kami?</h3>
+          <ul class="muted">
+            <li>Proses cepat & mudah</li>
+            <li>Harga jelas (transparan)</li>
+            <li>Dukungan WA setelah pembuatan</li>
+          </ul>
+        </div>
+      </div>
 
-        <label>Tujuan Bergabung</label>
-        <textarea id="tujuan" placeholder="Contoh: Belajar trading harian untuk passive income"></textarea>
+      <aside class="right">
+        <div class="card">
+          <h3>Daftar / Konsultasi</h3>
+          <p class="muted">Isi data singkat, kami hubungi lewat WA.</p>
+          <form id="leadForm" onsubmit="return submitLead(event)">
+            <label>Nama</label>
+            <input id="name" required>
+            <label>WA (08...)</label>
+            <input id="phone" required>
+            <label>Email (opsional)</label>
+            <input id="email">
+            <label>Pesan singkat</label>
+            <textarea id="msg"></textarea>
+            <button type="submit">Kirim & Chat WA</button>
+          </form>
+          <div class="trust">
+            <div class="muted">Terdaftar: <strong id="count">0</strong> klien</div>
+          </div>
+        </div>
 
-        <button type="submit">KIRIM PENDAFTARAN</button>
-        <button type="button" class="wa-btn" onclick="hubungiAdmin()">Hubungi Admin WA</button>
-    </form>
+        <div class="card" style="margin-top:12px;text-align:center">
+          <strong>Akses cepat</strong>
+          <div class="muted">Affiliate / kursus / donasi</div>
+          <!-- Contoh tombol bayar (ganti link dengan link PayPal/Saweria/Invoice) -->
+          <div style="margin-top:10px">
+            <a class="ghost" href="https://saweria.co/yourname" target="_blank">Donasi / Bayar</a>
+          </div>
+        </div>
+      </aside>
+    </section>
 
-    <footer>© 2025 Academy Crypto</footer>
-</div>
+    <footer>
+      © <span id="year"></span> jujuwebpro — Website & Academy Crypto • Hubungi WA untuk order.
+    </footer>
+  </div>
 
 <script>
-function daftar(e) {
+  // simple local saving and WA-forward
+  document.getElementById('year').textContent = new Date().getFullYear();
+  function submitLead(e){
     e.preventDefault();
-    
-    const data = {
-        nama: document.getElementById("nama").value,
-        wa: document.getElementById("wa").value,
-        email: document.getElementById("email").value,
-        level: document.getElementById("level").value,
-        tujuan: document.getElementById("tujuan").value,
-        waktu: new Date().toLocaleString()
-    };
+    const name = document.getElementById('name').value.trim();
+    const phone = document.getElementById('phone').value.trim();
+    const email = document.getElementById('email').value.trim();
+    const msg = document.getElementById('msg').value.trim();
 
-    const daftar = JSON.parse(localStorage.getItem("pendaftarCrypto") || "[]");
-    daftar.push(data);
-    localStorage.setItem("pendaftarCrypto", JSON.stringify(daftar));
+    if(!name || !phone) { alert('Isi nama & nomor WA'); return false; }
 
-    alert("Pendaftaran berhasil! Admin akan segera menghubungi Anda.");
-    document.getElementById("formDaftar").reset();
-}
+    // save locally (demo). Replace with API/Form endpoint to receive leads.
+    const leads = JSON.parse(localStorage.getItem('leads') || '[]');
+    leads.push({name,phone,email,msg,ts:new Date().toISOString()});
+    localStorage.setItem('leads', JSON.stringify(leads));
+    document.getElementById('count').textContent = leads.length;
 
-function hubungiAdmin() {
-    const pesan = encodeURIComponent("Halo admin, saya ingin daftar Academy Crypto!");
-    window.open("https://wa.me/6282269238794?text=" + pesan, "_blank");
-}
+    // open WhatsApp with prefill
+    const waNumber = '6282269238794'; // ganti nomormu (format 62...)
+    const text = encodeURIComponent(`Halo, saya ${name}. ${msg ? msg : 'Saya ingin konsultasi layanan website/chatbot.'} No WA: ${phone}`);
+    window.open('https://wa.me/' + waNumber + '?text=' + text, '_blank');
+    return false;
+  }
+
+  // load current count
+  const leadsNow = JSON.parse(localStorage.getItem('leads') || '[]'); document.getElementById('count').textContent = leadsNow.length;
 </script>
-
 </body>
 </html>
