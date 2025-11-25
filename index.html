@@ -3,508 +3,295 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>Demo Situs Slot — Slot Machine</title>
+<title>JujuAI — Chat AI Demo</title>
+<meta name="description" content="Antarmuka chat AI demo — JujuAI. Simulasi percakapan AI, siap dihubungkan ke API bila ingin." />
 <style>
   :root{
-    --bg:#0f1724;
-    --card:#0b1220;
-    --accent:#ffb347;
-    --muted:#94a3b8;
-    --glass: rgba(255,255,255,0.04);
-    font-family: Inter, Roboto, Arial, sans-serif;
+    --bg:#071021; --panel:#091427; --card:#0b1220; --accent:#7b61ff; --accent2:#00e0a8;
+    --text:#e6f0ff; --muted:#9fb0c8; --danger:#ff6b6b;
+    font-family: Inter, Roboto, system-ui, -apple-system, "Segoe UI", Arial, sans-serif;
+    --radius:12px;
   }
   *{box-sizing:border-box}
+  html,body{height:100%}
   body{
-    margin:0;
-    min-height:100vh;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    background:
-      radial-gradient(1200px 600px at 10% 10%, rgba(255,180,70,0.06), transparent 10%),
-      radial-gradient(900px 400px at 90% 90%, rgba(90,150,255,0.03), transparent 10%),
-      var(--bg);
-    color:#e6eef8;
-    padding:24px;
+    margin:0; min-height:100vh; background:radial-gradient(800px 400px at 10% 20%, rgba(123,97,255,0.06), transparent 6%), linear-gradient(180deg,#02040a 0%, #071021 100%);
+    color:var(--text); display:flex; align-items:center; justify-content:center; padding:20px;
   }
 
-  .container{
-    width:100%;
-    max-width:980px;
-    background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(0,0,0,0.02));
-    border-radius:14px;
-    padding:20px;
-    box-shadow: 0 8px 30px rgba(2,6,23,0.6);
-    display:grid;
-    grid-template-columns: 1fr 380px;
-    gap:18px;
+  .wrap{
+    width:100%; max-width:980px; height:80vh; background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(0,0,0,0.04));
+    border-radius:16px; display:grid; grid-template-columns: 1fr 320px; overflow:hidden; box-shadow: 0 12px 40px rgba(2,6,23,0.7);
   }
 
-  /* Left: Slot board */
-  .slot-board{
-    background:var(--card);
-    border-radius:12px;
-    padding:18px;
-    display:flex;
-    flex-direction:column;
-    gap:12px;
-  }
+  /* Left: chat area */
+  .chat-area{padding:18px; display:flex; flex-direction:column; gap:12px; background:var(--panel)}
+  .topbar{display:flex;align-items:center;justify-content:space-between; gap:12px}
+  .brand{display:flex;align-items:center;gap:12px}
+  .logo-dot{width:42px;height:42px;border-radius:10px;background:linear-gradient(90deg,var(--accent),var(--accent2));display:flex;align-items:center;justify-content:center;font-weight:800;color:#021}
+  .brand h1{margin:0;font-size:16px}
+  .brand p{margin:0;color:var(--muted);font-size:12px}
 
-  .top-row{
-    display:flex;
-    justify-content:space-between;
-    align-items:center;
-    gap:12px;
-  }
-  .brand{font-weight:700; font-size:18px; color:var(--accent)}
-  .balance{
-    background:var(--glass);
-    padding:8px 12px;
-    border-radius:10px;
-    font-size:14px;
-    color:var(--muted);
-  }
+  .messages{flex:1; overflow:auto; padding:8px; display:flex; flex-direction:column; gap:10px}
+  .msg{max-width:76%; padding:12px 14px; border-radius:12px; line-height:1.45; box-shadow: 0 6px 18px rgba(2,6,23,0.6)}
+  .msg.user{align-self:flex-end; background:linear-gradient(90deg,var(--accent2), rgba(0,224,168,0.08)); color:#021; border-bottom-right-radius:4px}
+  .msg.ai{align-self:flex-start; background:rgba(255,255,255,0.02); color:var(--text)}
+  .meta{font-size:12px;color:var(--muted);margin-top:6px}
+  .typing{display:inline-block; width:48px; height:14px; vertical-align:middle}
+  .dots span{display:inline-block;width:8px;height:8px;margin:0 3px;background:var(--muted);border-radius:50%;opacity:0.35;animation:dots 1s infinite}
+  .dots span:nth-child(2){animation-delay:.12s}
+  .dots span:nth-child(3){animation-delay:.24s}
+  @keyframes dots{0%{transform:translateY(0);opacity:.35}50%{transform:translateY(-6px);opacity:1}100%{transform:translateY(0);opacity:.35}}
 
-  .reels{
-    margin-top:6px;
-    display:flex;
-    gap:12px;
-    justify-content:center;
-    align-items:center;
-    padding:12px;
-    border-radius:10px;
-    background:linear-gradient(180deg, rgba(255,255,255,0.01), rgba(0,0,0,0.02));
-  }
+  .input-area{display:flex;gap:8px;align-items:center;background:linear-gradient(180deg, rgba(255,255,255,0.01), transparent); padding:12px;border-radius:12px}
+  textarea{flex:1; min-height:44px; max-height:140px; resize:none; border-radius:10px; padding:10px; border:1px solid rgba(255,255,255,0.04); background:transparent; color:var(--text); font-size:14px}
+  .controls{display:flex;gap:8px; align-items:center}
+  .btn{padding:10px 12px;border-radius:10px;border:none;cursor:pointer;font-weight:700;background:linear-gradient(90deg,var(--accent),var(--accent2)); color:#021}
+  .btn.ghost{background:transparent;border:1px solid rgba(255,255,255,0.04); color:var(--muted)}
+  .small{padding:8px 10px;border-radius:8px;background:transparent;border:1px solid rgba(255,255,255,0.03);color:var(--muted)}
 
-  .reel{
-    width:110px;
-    height:110px;
-    overflow:hidden;
-    border-radius:10px;
-    background:linear-gradient(180deg, rgba(255,255,255,0.01), rgba(0,0,0,0.08));
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    position:relative;
-    border:1px solid rgba(255,255,255,0.03);
-  }
+  /* Right: sidebar */
+  .sidebar{padding:18px;background:var(--card);display:flex;flex-direction:column;gap:12px}
+  .card{background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(0,0,0,0.03)); padding:12px;border-radius:10px}
+  .hint{font-size:13px;color:var(--muted)}
+  .example{display:flex;flex-direction:column;gap:8px}
+  .chip{padding:8px 10px;border-radius:999px;background:rgba(255,255,255,0.02);font-weight:600;cursor:pointer;color:var(--muted)}
+  .footer-note{font-size:12px;color:var(--muted);text-align:center;margin-top:auto}
 
-  .reel .strip{
-    position:absolute;
-    top:0;
-    left:0;
-    right:0;
-    transition: transform 1s cubic-bezier(.12,.8,.25,1);
-    display:flex;
-    flex-direction:column;
-    align-items:center;
-  }
-
-  .symbol{
-    width:100%;
-    height:110px;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    font-size:44px;
-    user-select:none;
-  }
-
-  /* Controls */
-  .controls{
-    display:flex;
-    gap:10px;
-    align-items:center;
-    margin-top:8px;
-  }
-  .btn{
-    background:linear-gradient(180deg, #1f2937, #0b1220);
-    color:#fff;
-    border:none;
-    padding:10px 14px;
-    border-radius:10px;
-    cursor:pointer;
-    font-weight:600;
-    box-shadow: 0 6px 14px rgba(2,6,23,0.6);
-  }
-  .btn:active{transform:translateY(1px)}
-  .btn.spin{background:linear-gradient(90deg,var(--accent), #ff7a7a); color:#0b1220}
-
-  .small-input{
-    background:transparent;
-    border:1px solid rgba(255,255,255,0.06);
-    padding:8px 10px;
-    border-radius:8px;
-    color:inherit;
-    width:120px;
-  }
-
-  /* Right column: info / paytable */
-  .side{
-    display:flex;
-    flex-direction:column;
-    gap:12px;
-  }
-  .card{
-    background:var(--card);
-    padding:12px;
-    border-radius:10px;
-  }
-  .pay-table{
-    display:grid;
-    grid-template-columns: 1fr 1fr;
-    gap:8px;
-  }
-  .pay-item{
-    display:flex;
-    align-items:center;
-    justify-content:space-between;
-    padding:8px;
-    background:rgba(255,255,255,0.012);
-    border-radius:8px;
-    font-size:14px;
-  }
-  .meta{font-size:12px; color:var(--muted)}
-
-  .message{
-    min-height:40px;
-    display:flex;
-    align-items:center;
-    gap:8px;
-    font-size:14px;
-    color:var(--accent);
-  }
-
-  footer{font-size:12px; color:var(--muted); text-align:center; margin-top:8px}
-
-  @media (max-width:940px){
-    .container{grid-template-columns:1fr; padding:14px}
-    .side{order:2}
-  }
+  /* responsive */
+  @media(max-width:960px){.wrap{grid-template-columns:1fr}.sidebar{display:none}}
 </style>
 </head>
 <body>
-  <div class="container" role="application" aria-label="Demo slot machine">
-    <div class="slot-board" aria-live="polite">
-      <div class="top-row">
-        <div class="brand">SLOT DEMO • LuckySpin</div>
-        <div class="balance">Kredit: <strong id="balance">1,000</strong></div>
-      </div>
-
-      <div class="reels" id="reels" aria-hidden="false">
-        <!-- Three reels -->
-        <div class="reel" data-reel="0">
-          <div class="strip"></div>
+  <div class="wrap" role="application" aria-label="JujuAI chat demo">
+    <section class="chat-area" aria-live="polite">
+      <div class="topbar">
+        <div class="brand">
+          <div class="logo-dot">JA</div>
+          <div>
+            <h1>JujuAI</h1>
+            <p>Chatbot demo — AI-style interface (simulasi)</p>
+          </div>
         </div>
-        <div class="reel" data-reel="1">
-          <div class="strip"></div>
-        </div>
-        <div class="reel" data-reel="2">
-          <div class="strip"></div>
+        <div style="display:flex;gap:8px;align-items:center">
+          <button id="exportBtn" class="btn ghost" title="Export percakapan">Export</button>
+          <button id="clearBtn" class="btn ghost" title="Hapus percakapan">Clear</button>
         </div>
       </div>
 
-      <div class="controls">
-        <label class="meta" for="bet">Taruhan:</label>
-        <input id="bet" class="small-input" type="number" min="1" step="1" value="10" />
-        <button id="spinBtn" class="btn spin">SPIN</button>
-        <button id="autoBtn" class="btn">AUTO</button>
-        <button id="maxBtn" class="btn">MAX</button>
-        <div style="flex:1"></div>
-        <div class="meta">Status: <span id="status" class="message">Siap</span></div>
+      <div id="messages" class="messages" tabindex="0" aria-live="polite" aria-atomic="false">
+        <!-- Messages inserted here -->
+        <div class="msg ai" id="welcome">
+          <strong>Halo — saya JujuAI (demo).</strong>
+          <div class="meta">Tanyakan sesuatu: mis. "Cara menghasilkan uang dari website?"</div>
+        </div>
       </div>
 
-      <div style="margin-top:8px; display:flex; gap:8px; align-items:center;">
-        <button id="addCredits" class="btn">+ Tambah Kredit</button>
-        <button id="resetBtn" class="btn">Reset</button>
+      <div class="input-area" role="region" aria-label="Input area">
+        <textarea id="input" placeholder="Ketik pertanyaan... (Ctrl+Enter untuk kirim)"></textarea>
+        <div class="controls">
+          <button id="sendBtn" class="btn">KIRIM</button>
+          <button id="sampleBtn" class="btn ghost" title="Contoh pertanyaan">Contoh</button>
+        </div>
       </div>
+    </section>
 
-      <footer>Demo hanya untuk tujuan edukasi — bukan platform perjudian nyata.</footer>
-    </div>
-
-    <div class="side">
+    <aside class="sidebar" aria-hidden="false">
       <div class="card">
-        <div style="font-weight:700; margin-bottom:8px">Tabel Pembayaran</div>
-        <div class="pay-table" id="paytable">
-          <!-- pay items inserted by JS -->
-        </div>
-        <div class="meta" style="margin-top:8px">3 simbol cocok pada garis horizontal utama.</div>
+        <h3 style="margin:0">Tips Cepat</h3>
+        <p class="hint">Gunakan pertanyaan jelas, contoh: “Bagaimana cara pasang AdSense di GitHub Pages?”</p>
       </div>
 
       <div class="card">
-        <div style="font-weight:700; margin-bottom:8px">Simbol</div>
-        <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap">
-          <div style="display:flex;flex-direction:column;align-items:center;width:80px">
-            <div style="font-size:36px">🍒</div><div class="meta">Cherry</div>
-          </div>
-          <div style="display:flex;flex-direction:column;align-items:center;width:80px">
-            <div style="font-size:36px">🔔</div><div class="meta">Bell</div>
-          </div>
-          <div style="display:flex;flex-direction:column;align-items:center;width:80px">
-            <div style="font-size:36px">💎</div><div class="meta">Diamond</div>
-          </div>
-          <div style="display:flex;flex-direction:column;align-items:center;width:80px">
-            <div style="font-size:36px">🍋</div><div class="meta">Lemon</div>
-          </div>
-          <div style="display:flex;flex-direction:column;align-items:center;width:80px">
-            <div style="font-size:36px">⭐</div><div class="meta">Star (JACKPOT)</div>
-          </div>
+        <h4 style="margin:0 0 8px 0">Contoh Cepat</h4>
+        <div class="example">
+          <div class="chip" data-q="Bagaimana cara menghasilkan uang dari website game?">Menghasilkan uang dari website game</div>
+          <div class="chip" data-q="Buatkan saya 5 judul artikel SEO untuk game demo">5 judul artikel SEO</div>
+          <div class="chip" data-q="Bagaimana cara daftar AdSense di Indonesia?">Cara daftar AdSense</div>
         </div>
       </div>
 
-      <div class="card" aria-live="polite">
-        <div style="font-weight:700; margin-bottom:8px">Riwayat</div>
-        <div id="history" style="max-height:220px; overflow:auto; font-size:13px; color:var(--muted)"></div>
+      <div class="card">
+        <h4 style="margin:0 0 8px 0">Pengaturan (Sim)</h4>
+        <div class="hint">Mode: <strong>Simulasi di sisi-klien</strong></div>
+        <div style="margin-top:8px"><button id="toggleTheme" class="small">Toggle Tema</button></div>
       </div>
-    </div>
+
+      <div class="footer-note">JujuAI • Demo — Tidak memanggil API eksternal</div>
+    </aside>
   </div>
 
 <script>
 /*
-  Demo slot logic (client-side).
-  - 3 reels, each shows three stacked symbols; central visible symbol is used for payout.
-  - Symbols and weights determine distribution.
-  - Simple paytable: match 3 of same symbol gets multiplier * bet.
-  - Not suitable for real-money gambling without backend, security, legal compliance.
+  JujuAI Chat Demo (client-side simulation)
+  - Simulasi response dengan delay + typing effect
+  - Export & clear conversation
+  - Comments below show where to replace with real API call
 */
 
-// Config
-const symbols = [
-  { id: 'cherry', icon:'🍒', weight: 28, payout: 4 },
-  { id: 'lemon',  icon:'🍋', weight: 24, payout: 3 },
-  { id: 'bell',   icon:'🔔', weight: 20, payout: 6 },
-  { id: 'diamond',icon:'💎', weight: 18, payout: 10 },
-  { id: 'star',   icon:'⭐', weight: 10, payout: 50 } // jackpot rare
-];
+/* Utilities */
+const $ = (sel) => document.querySelector(sel);
+const $$ = (sel) => Array.from(document.querySelectorAll(sel));
 
-// Build weighted symbol list for randomness
-const weighted = [];
-symbols.forEach(s => {
-  for(let i=0;i<s.weight;i++) weighted.push(s);
-});
+const messagesEl = $('#messages');
+const inputEl = $('#input');
+const sendBtn = $('#sendBtn');
+const sampleBtn = $('#sampleBtn');
+const exportBtn = $('#exportBtn');
+const clearBtn = $('#clearBtn');
+const chips = $$('.chip');
 
-// State
-let balance = 1000;
-let autoMode = false;
-const reelsEl = document.getElementById('reels');
-const balanceEl = document.getElementById('balance');
-const betInput = document.getElementById('bet');
-const spinBtn = document.getElementById('spinBtn');
-const autoBtn = document.getElementById('autoBtn');
-const maxBtn = document.getElementById('maxBtn');
-const statusEl = document.getElementById('status');
-const historyEl = document.getElementById('history');
-const addCreditsBtn = document.getElementById('addCredits');
-const resetBtn = document.getElementById('resetBtn');
-const paytableEl = document.getElementById('paytable');
+let conv = []; // store conversation objects {role:'user'|'ai', text, time}
 
-function updateBalance(){
-  balanceEl.textContent = Math.round(balance);
+/* DOM helpers */
+function appendMessage(role, text, meta=''){
+  const div = document.createElement('div');
+  div.className = 'msg ' + (role==='user' ? 'user' : 'ai');
+  div.innerHTML = `<div>${text}</div>${meta ? `<div class="meta">${meta}</div>` : ''}`;
+  messagesEl.appendChild(div);
+  messagesEl.scrollTop = messagesEl.scrollHeight;
+  conv.push({role, text, time: new Date().toISOString()});
 }
-function setStatus(txt, accent=false){
-  statusEl.textContent = txt;
-  statusEl.style.color = accent ? 'var(--accent)' : '';
-}
-function appendHistory(txt){
+
+/* Typing indicator */
+function showTyping(){
   const d = document.createElement('div');
-  d.textContent = txt;
-  historyEl.prepend(d);
-  // keep only recent 100
-  while(historyEl.children.length > 100) historyEl.removeChild(historyEl.lastChild);
+  d.className = 'msg ai typing-indicator';
+  d.innerHTML = '<div class="dots"><span></span><span></span><span></span></div>';
+  messagesEl.appendChild(d);
+  messagesEl.scrollTop = messagesEl.scrollHeight;
+  return d;
 }
 
-// render paytable
-function renderPaytable(){
-  paytableEl.innerHTML = '';
-  symbols.slice().reverse().forEach(s => {
-    const w = document.createElement('div');
-    w.className='pay-item';
-    w.innerHTML = `<div style="display:flex;gap:8px;align-items:center"><div style="font-size:20px">${s.icon}</div><div>${s.id}</div></div><div><strong>x${s.payout}</strong></div>`;
-    paytableEl.appendChild(w);
-  });
+/* Simulated AI reply logic (basic) */
+function simulatedReply(prompt){
+  // VERY simple rule-based simulation — replace with real API later
+  const p = prompt.toLowerCase();
+  if(p.includes('adense') || p.includes('adsense') || p.includes('ads')) {
+    return "Untuk AdSense: biasanya Anda perlu domain sendiri (bukan username.github.io), konten unik, Privacy Policy, dan lalu mendaftar melalui akun Google. Saya bisa bantu langkah per langkah.";
+  }
+  if(p.includes('artikel') || p.includes('judul')) {
+    return "Contoh 5 judul SEO untuk niche game demo:\n1) 10 Game Slot Demo Gratis Terbaik 2025\n2) Cara Memainkan Game Slot Demo untuk Pemula\n3) 5 Tips Mendapatkan Koin Gratis di Game Demo\n4) Review: LuckySpin — Kelebihan & Fitur\n5) Perbandingan Game A vs Game B — Mana Terbaik?";
+  }
+  if(p.includes('menghasilkan uang') || p.includes('menghasil')) {
+    return "Beberapa cara menghasilkan uang dari website game: (1) Iklan (AdSense), (2) Affiliate CPI/CPS, (3) Jual produk digital (asset/game template), (4) Sponsorship dan konten bersponsor.";
+  }
+  if(p.includes('github') || p.includes('github pages')) {
+    return "GitHub Pages cocok untuk situs statis: upload file HTML/CSS, aktifkan Pages di repo settings. Untuk AdSense biasanya butuh domain kustom (contoh: jujuplay.id).";
+  }
+  // fallback: use a neutral helpful answer
+  return "Maaf — ini demo lokal. Saya merekomendasikan membuat daftar langkah kecil: 1) Tentukan tujuan monetisasi, 2) Buat konten 10-20 artikel, 3) Promosi lewat sosial media, 4) Pasang iklan/affiliate. Mau saya buatkan contoh rencana 30 hari?";
 }
-renderPaytable();
 
-// populate reels visual strips with repeated symbols
-function makeStripContent(){
-  // each reel strip will be longer to allow animation
-  return weighted.concat(weighted).concat(weighted); // repeat to reduce edge effects
-}
+/* send flow */
+async function sendMessage(text){
+  if(!text || !text.trim()) return;
+  appendMessage('user', escapeHtml(text));
+  inputEl.value = '';
+  inputEl.focus();
 
-function buildReels(){
-  const stripContent = makeStripContent();
-  document.querySelectorAll('.reel').forEach((reelEl, idx) => {
-    const strip = reelEl.querySelector('.strip');
-    strip.innerHTML = '';
-    // randomize starting offset
-    for(let i=0;i<stripContent.length;i++){
-      const sym = stripContent[i];
-      const div = document.createElement('div');
-      div.className='symbol';
-      div.textContent = sym.icon;
-      strip.appendChild(div);
-    }
-    // small random transform
-    strip.style.transform = `translateY(-${Math.floor(Math.random()*110)}px)`;
-  });
-}
-buildReels();
+  // show typing
+  const typingNode = showTyping();
 
-// Spin logic
-let spinning = false;
-function getRandomSymbol(){
-  return weighted[Math.floor(Math.random()*weighted.length)];
-}
-function spinOnce(){
-  if(spinning) return;
-  let bet = Number(betInput.value) || 1;
-  if(bet <= 0) bet = 1;
-  if(bet > balance){
-    setStatus('Kredit tidak cukup', false);
-    return;
+  // simulate network delay & thinking
+  await delay(700 + Math.random()*900);
+
+  // build reply (in real integration replace this with API call)
+  const reply = simulatedReply(text);
+
+  // simulate streaming by revealing text gradually
+  let revealed = '';
+  for(let i=0;i<reply.length;i++){
+    revealed += reply[i];
+    typingNode.innerHTML = `<div>${escapeHtml(revealed)}<span class="cursor">▌</span></div>`;
+    messagesEl.scrollTop = messagesEl.scrollHeight;
+    await delay(6 + Math.random()*10);
   }
 
-  spinning = true;
-  setStatus('Berputar...', false);
-  spinBtn.disabled = true;
-  autoBtn.disabled = true;
-  maxBtn.disabled = true;
-
-  // Deduct bet
-  balance -= bet;
-  updateBalance();
-
-  // Choose outcome symbols (center row)
-  const outcome = [
-    getRandomSymbol(),
-    getRandomSymbol(),
-    getRandomSymbol()
-  ];
-
-  // For each reel, compute target index in strip and animate
-  const stripContent = makeStripContent();
-  const baseDelay = 300;
-  document.querySelectorAll('.reel').forEach((reelEl, idx) => {
-    const strip = reelEl.querySelector('.strip');
-    // find a random index in stripContent matching chosen outcome
-    let targetIndexes = [];
-    for(let i=0;i<stripContent.length;i++){
-      if(stripContent[i].id === outcome[idx].id) targetIndexes.push(i);
-    }
-    let chosen = targetIndexes[Math.floor(Math.random()*targetIndexes.length)];
-    // shift so that chosen symbol will land centered
-    // each symbol height is 110px; center will be at translate such that chosen item is visible at top 0 (we used overflow:hidden)
-    // We'll animate to a very large negative translate to create spin illusion
-    const spinRounds = 3 + idx; // more rounds for later reels
-    const finalIndex = chosen + spinRounds * stripContent.length;
-    const translateY = finalIndex * 110;
-    // Add small randomness
-    const extraOffset = Math.floor(Math.random()*3) * 110;
-    const totalTranslate = translateY + extraOffset;
-
-    // set transition durations and delays for staggered stop
-    const duration = 800 + idx*200 + Math.floor(Math.random()*300);
-    strip.style.transition = `transform ${duration}ms cubic-bezier(.12,.8,.25,1)`;
-    // start transform (must trigger in next frame)
-    setTimeout(()=>{
-      strip.style.transform = `translateY(-${totalTranslate}px)`;
-    }, 30 + idx*80);
-
-    // after animation done for last reel, evaluate
-    const onDone = idx === 2 ? duration + baseDelay + 200 : 0;
-    if(onDone){
-      setTimeout(()=>{ finishSpin(outcome, bet); }, onDone);
-    }
-  });
+  // replace typing node with final message
+  typingNode.remove();
+  appendMessage('ai', escapeHtml(reply));
 }
 
-function finishSpin(outcome, bet){
-  // Determine payout: simple rule: 3 same symbols => payout multiplier
-  let payout = 0;
-  const ids = outcome.map(o => o.id);
-  if(ids[0] === ids[1] && ids[1] === ids[2]){
-    const sym = symbols.find(s=>s.id===ids[0]);
-    payout = bet * sym.payout;
-    balance += payout;
-    setStatus(`MENANG! ${outcome[0].icon} x3 -> +${payout} kredit`, true);
-    appendHistory(`${new Date().toLocaleTimeString()} • Menang: ${payout} (Taruhan ${bet})`);
-  } else {
-    setStatus('Kalah', false);
-    appendHistory(`${new Date().toLocaleTimeString()} • Kalah (Taruhan ${bet})`);
-  }
-
-  updateBalance();
-  spinning = false;
-  spinBtn.disabled = false;
-  autoBtn.disabled = false;
-  maxBtn.disabled = false;
-
-  // auto mode continuation
-  if(autoMode){
-    // stop auto if balance too low
-    const betVal = Number(betInput.value) || 1;
-    if(balance < betVal){
-      autoMode = false;
-      autoBtn.textContent = 'AUTO';
-      setStatus('Auto berhenti — kredit tidak cukup', false);
-    } else {
-      // small delay before next spin
-      setTimeout(()=>{ if(!spinning) spinOnce(); }, 400);
-    }
-  }
+/* helpers */
+function delay(ms){ return new Promise(resolve=>setTimeout(resolve, ms)); }
+function escapeHtml(s){
+  return s.replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;');
 }
 
-// Controls
-spinBtn.addEventListener('click', spinOnce);
-autoBtn.addEventListener('click', ()=>{
-  autoMode = !autoMode;
-  autoBtn.textContent = autoMode ? 'STOP' : 'AUTO';
-  if(autoMode){
-    // ensure enough balance
-    const betVal = Number(betInput.value) || 1;
-    if(balance < betVal){
-      setStatus('Kredit tidak cukup untuk auto', false);
-      autoMode = false;
-      autoBtn.textContent = 'AUTO';
-      return;
-    }
-    setStatus('Auto running...', false);
-    spinOnce();
-  }
-});
-
-maxBtn.addEventListener('click', ()=>{
-  const maxBet = Math.max(1, Math.floor(balance/10));
-  betInput.value = maxBet;
-  setStatus('Taruhan diset MAX', false);
-});
-
-addCreditsBtn.addEventListener('click', ()=>{
-  balance += 500;
-  updateBalance();
-  setStatus('+500 kredit ditambahkan', true);
-  appendHistory(`${new Date().toLocaleTimeString()} • +500 kredit`);
-});
-
-resetBtn.addEventListener('click', ()=>{
-  balance = 1000;
-  updateBalance();
-  betInput.value = 10;
-  historyEl.innerHTML='';
-  setStatus('Reset ke kondisi awal', false);
-});
-
-// Initialize UI
-updateBalance();
-setStatus('Siap', false);
-
-// Accessibility: allow Space to spin when focused on page
-window.addEventListener('keydown', (e)=>{
-  if(e.code === 'Space' && document.activeElement.tagName !== 'INPUT'){
+/* Events */
+sendBtn.addEventListener('click', ()=> sendMessage(inputEl.value));
+inputEl.addEventListener('keydown', (e)=>{
+  if(e.key === 'Enter' && (e.ctrlKey || e.metaKey)){
     e.preventDefault();
-    spinOnce();
+    sendMessage(inputEl.value);
   }
 });
+sampleBtn.addEventListener('click', ()=>{
+  // show three sample suggestions quickly
+  const q = "Bagaimana cara menghasilkan uang dari website game?";
+  inputEl.value = q;
+  inputEl.focus();
+});
+
+chips.forEach(c => c.addEventListener('click', (e)=>{
+  const q = e.currentTarget.dataset.q;
+  inputEl.value = q;
+  inputEl.focus();
+}));
+
+clearBtn.addEventListener('click', ()=>{
+  if(!confirm('Hapus semua percakapan?')) return;
+  conv = [];
+  messagesEl.innerHTML = '';
+  const w = document.createElement('div'); w.className='msg ai'; w.id='welcome';
+  w.innerHTML = '<strong>Halo — saya JujuAI (demo).</strong><div class="meta">Tanyakan sesuatu: mis. \"Cara menghasilkan uang dari website?\"</div>';
+  messagesEl.appendChild(w);
+});
+
+exportBtn.addEventListener('click', ()=>{
+  if(conv.length===0){ alert('Belum ada percakapan untuk diekspor.'); return; }
+  const data = JSON.stringify({meta:{exportedAt:new Date().toISOString()}, conv}, null, 2);
+  const blob = new Blob([data], {type:'application/json'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = 'jujuai_conversation.json'; document.body.appendChild(a); a.click();
+  a.remove(); URL.revokeObjectURL(url);
+});
+
+/* Theme toggle (simple) */
+const toggleTheme = document.getElementById('toggleTheme');
+toggleTheme.addEventListener('click', ()=>{
+  document.body.classList.toggle('light-mode');
+  // simple color switch
+  if(document.body.classList.contains('light-mode')){
+    document.documentElement.style.setProperty('--bg','#f6f7fb');
+    document.documentElement.style.setProperty('--panel','#ffffff');
+    document.documentElement.style.setProperty('--card','#ffffff');
+    document.documentElement.style.setProperty('--text','#071021');
+    document.documentElement.style.setProperty('--muted','#4b5563');
+  } else {
+    document.documentElement.style.removeProperty('--bg');
+    document.documentElement.style.removeProperty('--panel');
+    document.documentElement.style.removeProperty('--card');
+    document.documentElement.style.removeProperty('--text');
+    document.documentElement.style.removeProperty('--muted');
+  }
+});
+
+/* Accessibility: focus input on load */
+window.addEventListener('load', ()=> inputEl.focus());
+
+/* PLACEHOLDER: How to replace simulation with real API (example)
+   - Remove simulatedReply & related streaming code.
+   - In sendMessage(), instead call your backend endpoint:
+     const resp = await fetch('/api/chat', {method:'POST', body: JSON.stringify({prompt:text})});
+     const data = await resp.json(); // {reply: "..."}
+     appendMessage('ai', data.reply);
+   - Or directly call OpenAI API from server-side only.
+   - NEVER embed secret API keys in client-side JS.
+*/
+
 </script>
 </body>
 </html>
