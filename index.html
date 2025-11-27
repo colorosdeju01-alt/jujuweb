@@ -3,229 +3,287 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Juju AI — Futuristic Assistant</title>
+  <title>Juju AI — Video Trimmer</title>
 
   <!-- Font -->
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
 
   <style>
     :root{
-      --bg1: #0f1724;
-      --accent1: #00d4ff; /* cyan */
-      --accent2: #7b61ff; /* purple */
-      --glass: rgba(255,255,255,0.06);
-      --glass-2: rgba(255,255,255,0.04);
-      --text: #e6f0ff;
+      --bg:#071025;
+      --card: rgba(255,255,255,0.03);
+      --accent1:#00d4ff;
+      --accent2:#7b61ff;
+      --glass: rgba(255,255,255,0.04);
+      --text:#e6f0ff;
     }
-    html,body{height:100%;margin:0;font-family:'Poppins',system-ui,Arial;color:var(--text);background:linear-gradient(180deg,var(--bg1) 0%, #071025 100%);-webkit-font-smoothing:antialiased;}
-    /* Background neon gradient + subtle grid */
-    body::before{
-      content:"";
-      position:fixed;inset:0;
-      background:
-        radial-gradient(600px 200px at 10% 10%, rgba(123,97,255,0.06), transparent 10%),
-        radial-gradient(400px 140px at 90% 90%, rgba(0,212,255,0.04), transparent 10%);
-      pointer-events:none;
-      z-index:0;
-      mix-blend-mode:screen;
-    }
-
-    /* Container */
-    .wrap{position:relative;z-index:1;max-width:1100px;margin:30px auto;padding:28px;}
-
-    /* NAV */
-    nav{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:14px 18px;border-radius:12px;background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));box-shadow:0 6px 18px rgba(3,7,18,0.6);backdrop-filter: blur(6px);}
-    .logo{display:flex;align-items:center;gap:12px}
-    .logo .mark{width:44px;height:44px;border-radius:10px;display:grid;place-items:center;background:linear-gradient(135deg,var(--accent1),var(--accent2));box-shadow:0 6px 22px rgba(124,97,255,0.12), 0 1px 0 rgba(255,255,255,0.02)}
-    .logo h1{font-size:18px;margin:0;font-weight:700;color:var(--text)}
-    .navlinks{display:flex;gap:14px;align-items:center}
-    .navlinks a{color:rgba(230,240,255,0.9);text-decoration:none;font-weight:600;padding:8px 12px;border-radius:8px}
-    .navlinks a:hover{background:linear-gradient(90deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));box-shadow:0 6px 14px rgba(2,6,25,0.4)}
-
-    /* HERO layout */
-    .hero{display:grid;grid-template-columns:1fr 420px;gap:28px;align-items:center;margin-top:28px}
-    @media(max-width:880px){.hero{grid-template-columns:1fr;}.navlinks{display:none}}
-
-    .hero-left{padding:14px}
-    .kicker{display:inline-block;padding:8px 12px;border-radius:999px;background:linear-gradient(90deg,var(--accent1),var(--accent2));color:#031024;font-weight:700;font-size:12px;box-shadow:0 8px 30px rgba(0,212,255,0.08)}
-    h2{font-size:36px;margin:18px 0 12px;line-height:1.05;text-shadow:0 6px 30px rgba(0,0,0,0.45)}
-    p.lead{opacity:0.9;margin:0 0 18px;color:rgba(230,240,255,0.9)}
-
-    .cta-row{display:flex;gap:12px;flex-wrap:wrap}
-    .btn{display:inline-flex;align-items:center;gap:10px;padding:12px 18px;border-radius:10px;font-weight:700;text-decoration:none;border:1px solid rgba(255,255,255,0.04)}
-    .btn-primary{background:linear-gradient(90deg,var(--accent1),var(--accent2));color:#041425;box-shadow:0 14px 40px rgba(123,97,255,0.12)}
-    .btn-ghost{background:transparent;color:var(--text);border:1px solid rgba(255,255,255,0.06)}
-
-    /* hero card right */
-    .hero-right{display:grid;place-items:center;padding:6px}
-    .robot-card{width:100%;max-width:420px;border-radius:16px;padding:22px;background:linear-gradient(180deg,var(--glass),var(--glass-2));box-shadow:0 8px 30px rgba(2,8,20,0.6);backdrop-filter: blur(8px);position:relative;overflow:hidden}
-    .robot-card .robot-wrap{display:flex;gap:16px;align-items:center}
-    .robot-svg{width:140px;height:140px;flex:0 0 140px;filter:drop-shadow(0 10px 30px rgba(0,212,255,0.08));transform:translateY(-4px);animation:float 6s ease-in-out infinite}
-    @keyframes float{0%{transform:translateY(-4px)}50%{transform:translateY(6px)}100%{transform:translateY(-4px)}}
-
-    /* neon ring */
-    .neon-ring{position:absolute;right:-60px;top:-60px;width:220px;height:220px;border-radius:50%;background:conic-gradient(from 120deg at 50% 50%, rgba(0,212,255,0.08), rgba(123,97,255,0.08));filter:blur(40px);opacity:0.9}
-
-    .robot-info h3{margin:0;font-size:20px}
-    .robot-info p{opacity:0.85;margin-top:8px;font-size:14px;color:rgba(230,240,255,0.9)}
-
-    /* features list */
-    .features{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin-top:28px}
-    @media(max-width:900px){.features{grid-template-columns:1fr}}
-    .feature{background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));padding:18px;border-radius:12px;box-shadow:0 8px 18px rgba(2,6,20,0.5);border:1px solid rgba(255,255,255,0.02)}
-    .feature h4{margin:0 0 8px}
-    .muted{color:rgba(230,240,255,0.7);font-size:14px}
-
-    /* footer */
-    footer{margin-top:40px;padding:20px;border-radius:12px;text-align:center;color:rgba(230,240,255,0.65);font-size:13px;background:linear-gradient(180deg, rgba(255,255,255,0.01), rgba(255,255,255,0.01));box-shadow:0 10px 30px rgba(2,6,20,0.55)}
-
-    /* small helpers */
-    .small{font-size:13px;color:rgba(230,240,255,0.7)}
-    .pill{padding:6px 10px;border-radius:999px;background:rgba(255,255,255,0.02);font-weight:600;color:var(--text);display:inline-block}
-
+    html,body{height:100%;margin:0;font-family:'Poppins',sans-serif;background:linear-gradient(180deg,var(--bg), #04101b);color:var(--text);-webkit-font-smoothing:antialiased}
+    .wrap{max-width:1100px;margin:28px auto;padding:20px}
+    header{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:18px}
+    header h1{margin:0;font-size:20px;color:var(--accent2)}
+    .card{background:linear-gradient(180deg,var(--card), rgba(255,255,255,0.01));padding:18px;border-radius:12px;box-shadow:0 8px 30px rgba(2,6,20,0.6);border:1px solid rgba(255,255,255,0.02)}
+    .top-row{display:flex;gap:16px;align-items:center;flex-wrap:wrap}
+    .u-file{display:flex;gap:10px;align-items:center}
+    input[type=file]{display:block}
+    .video-area{display:grid;grid-template-columns:1fr 360px;gap:18px;margin-top:18px}
+    @media(max-width:980px){.video-area{grid-template-columns:1fr}}
+    video{width:100%;border-radius:10px;background:#000;max-height:480px}
+    .controls{display:flex;flex-direction:column;gap:12px}
+    .range-row{display:flex;gap:8px;align-items:center}
+    input[type=range]{width:100%}
+    .btn{display:inline-flex;align-items:center;gap:8px;padding:10px 14px;border-radius:10px;font-weight:600;text-decoration:none;border:1px solid rgba(255,255,255,0.04);cursor:pointer}
+    .btn-primary{background:linear-gradient(90deg,var(--accent1),var(--accent2));color:#041425;box-shadow:0 12px 34px rgba(123,97,255,0.08)}
+    .btn-ghost{background:transparent;color:var(--text)}
+    .small{font-size:13px;color:rgba(230,240,255,0.8)}
+    .progress{height:10px;background:rgba(255,255,255,0.03);border-radius:8px;overflow:hidden}
+    .progress > i{display:block;height:100%;width:0%;background:linear-gradient(90deg,var(--accent1),var(--accent2));transition:width 0.2s}
+    .meta{font-size:13px;color:rgba(230,240,255,0.75)}
+    .footer{margin-top:18px;text-align:center;color:rgba(230,240,255,0.6);font-size:13px}
+    .note{background:linear-gradient(180deg, rgba(255,255,255,0.01), rgba(255,255,255,0.01));padding:10px;border-radius:8px;color:rgba(230,240,255,0.8)}
+    a.link{color:var(--accent1);text-decoration:none;font-weight:600}
   </style>
 </head>
 <body>
   <div class="wrap">
+    <header>
+      <h1>Juju AI — Video Trimmer</h1>
+      <div class="small">Client-side • Tanpa watermark • Gratis</div>
+    </header>
 
-    <!-- NAV -->
-    <nav aria-label="Main navigation">
-      <div class="logo">
-        <div class="mark" aria-hidden="true">
-          <!-- small icon -->
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <rect x="3" y="4" width="18" height="4" rx="1.5" fill="white" opacity="0.95"/>
-            <rect x="3" y="10" width="14" height="4" rx="1.5" fill="white" opacity="0.9"/>
-            <rect x="3" y="16" width="10" height="4" rx="1.5" fill="white" opacity="0.85"/>
-          </svg>
-        </div>
-        <h1>Juju AI</h1>
-      </div>
-
-      <div class="navlinks" role="navigation" aria-label="secondary">
-        <a href="index.html#fitur">Fitur</a>
-        <a href="jasa.html">Jasa</a>
-        <a href="index.html#kontak">Kontak</a>
-        <a href="https://colorosdeju01-alt.github.io/ai-bot/" class="btn btn-primary" style="padding:8px 14px;font-size:14px">Buka Chat</a>
-      </div>
-    </nav>
-
-    <!-- HERO -->
-    <section class="hero" aria-labelledby="hero-title">
-      <div class="hero-left">
-        <span class="kicker">Futuristic · AI</span>
-        <h2 id="hero-title">Asisten AI Futuristik — Jawaban Instan & Cerdas</h2>
-        <p class="lead">Juju AI membantu membuat script, caption, ringkasan, dan potongan video otomatis. Cocok untuk content creator & developer.</p>
-
-        <div class="cta-row" style="margin-top:16px">
-          <a class="btn btn-primary" href="https://colorosdeju01-alt.github.io/ai-bot/">
-            <!-- svg chat icon -->
-            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M21 15a2 2 0 0 1-2 2H8l-5 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" stroke="#041425" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-            Mulai Chat
-          </a>
-
-          <a class="btn btn-ghost" href="jasa.html">Lihat Jasa</a>
-
-          <a class="btn btn-ghost" href="contact.html">Hubungi</a>
+    <div class="card">
+      <div class="top-row">
+        <div class="u-file">
+          <label class="btn btn-ghost" for="fileInput">➕ Upload Video</label>
+          <input id="fileInput" type="file" accept="video/*" style="display:none">
+          <div id="fileName" class="meta">Belum ada file terpilih</div>
         </div>
 
-        <div style="margin-top:20px" class="small">Atau coba: <span class="pill">Auto-caption</span> • <span class="pill">AI Summary</span> • <span class="pill">Clipper tools</span></div>
-
-        <!-- features (mobile short) -->
-        <div class="features" style="margin-top:22px">
-          <div class="feature">
-            <h4>⚡ Respon Cepat</h4>
-            <p class="muted">Jawaban singkat, padat, dan relevan.</p>
-          </div>
-          <div class="feature">
-            <h4>🔒 Aman & Ringan</h4>
-            <p class="muted">Website cepat, optimasi mobile-friendly.</p>
-          </div>
-          <div class="feature">
-            <h4>🛠️ Mudah Digunakan</h4>
-            <p class="muted">Integrasi cepat ke WhatsApp & Formspree.</p>
-          </div>
-        </div>
+        <div style="margin-left:auto" id="ffmpegStatus" class="meta">FFmpeg: <span id="ffstat">Belum dimuat</span></div>
       </div>
 
-      <!-- HERO RIGHT: robot card -->
-      <div class="hero-right" aria-hidden="true">
-        <div class="robot-card">
-          <div class="neon-ring" aria-hidden="true"></div>
+      <div class="video-area">
+        <div>
+          <video id="player" controls preload="metadata" crossorigin="anonymous">
+            <!-- source ditambahkan via JS -->
+          </video>
 
-          <div class="robot-wrap">
-            <!-- ROBOT SVG (inline) -->
-            <svg class="robot-svg" viewBox="0 0 256 256" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Robot illustration">
-              <defs>
-                <linearGradient id="g1" x1="0" x2="1">
-                  <stop offset="0" stop-color="#00d4ff"/>
-                  <stop offset="1" stop-color="#7b61ff"/>
-                </linearGradient>
-              </defs>
-              <rect x="48" y="48" width="160" height="160" rx="28" fill="url(#g1)" opacity="0.12"/>
-              <rect x="64" y="64" width="128" height="110" rx="16" fill="#081527"/>
-              <rect x="88" y="84" width="80" height="18" rx="8" fill="#0f2130" />
-              <!-- eyes -->
-              <g transform="translate(80,112)">
-                <circle cx="0" cy="0" r="10" fill="#00d4ff" opacity="0.98"/>
-                <circle cx="72" cy="0" r="10" fill="#7b61ff" opacity="0.98"/>
-              </g>
-              <!-- mouth -->
-              <rect x="96" y="138" width="64" height="10" rx="5" fill="#0a1b27" />
-              <!-- antenna -->
-              <rect x="120" y="44" width="16" height="20" rx="4" fill="#00d4ff" opacity="0.9"/>
-              <circle cx="128" cy="40" r="6" fill="#7b61ff"/>
-            </svg>
+          <div style="margin-top:10px;display:flex;gap:10px;align-items:center;flex-wrap:wrap">
+            <button id="playBtn" class="btn btn-ghost">▶ Play</button>
+            <button id="pauseBtn" class="btn btn-ghost">⏸ Pause</button>
+            <button id="resetBtn" class="btn btn-ghost">↺ Reset Range</button>
+            <div style="margin-left:auto" class="meta">Durasi: <span id="duration">0.0</span> s</div>
+          </div>
 
-            <div class="robot-info">
-              <h3>Juju Bot</h3>
-              <p>Bot AI ringan untuk ringkasan, caption, dan potongan video. Cocok untuk creator.</p>
+          <div style="margin-top:12px" class="note">
+            <div class="small">Pilih range potong dengan slider atau input detik. Setelah trim, klik <strong>Trim Video</strong> lalu tunggu proses sampai selesai.</div>
+          </div>
+        </div>
+
+        <div class="controls">
+          <div>
+            <label class="meta">Start (detik)</label>
+            <div class="range-row">
+              <input id="startRange" type="range" min="0" max="100" step="0.01" value="0">
+              <input id="startInput" type="number" min="0" step="0.01" value="0" style="width:90px;padding:8px;border-radius:8px;background:transparent;border:1px solid rgba(255,255,255,0.04);color:var(--text)">
             </div>
           </div>
 
-          <div style="margin-top:16px;display:flex;gap:10px;align-items:center">
-            <a class="btn btn-primary" href="https://colorosdeju01-alt.github.io/ai-bot/" style="font-size:14px;padding:10px 12px">Coba Sekarang</a>
-            <a class="btn btn-ghost" href="jasa.html" style="font-size:14px;padding:10px 12px">Order Jasa</a>
+          <div>
+            <label class="meta">End (detik)</label>
+            <div class="range-row">
+              <input id="endRange" type="range" min="0" max="100" step="0.01" value="5">
+              <input id="endInput" type="number" min="0" step="0.01" value="5" style="width:90px;padding:8px;border-radius:8px;background:transparent;border:1px solid rgba(255,255,255,0.04);color:var(--text)">
+            </div>
           </div>
+
+          <div>
+            <div class="meta">Hasil potongan akan terdownload otomatis setelah selesai.</div>
+            <div style="margin-top:8px;display:flex;gap:10px">
+              <button id="trimBtn" class="btn btn-primary">Trim Video</button>
+              <button id="downloadBtn" class="btn btn-ghost" style="display:none">Download</button>
+            </div>
+          </div>
+
+          <div style="margin-top:8px">
+            <div class="meta">Progress</div>
+            <div class="progress" style="margin-top:6px"><i id="progBar"></i></div>
+            <div id="log" class="meta" style="margin-top:8px"></div>
+          </div>
+
+          <div style="margin-top:12px" class="meta">Keterangan: proses dilakukan di perangkatmu. Jika file besar, proses bisa butuh waktu & memori.</div>
         </div>
       </div>
-    </section>
+    </div>
 
-    <!-- more features -->
-    <section id="fitur" style="margin-top:28px">
-      <div style="display:flex;gap:18px;flex-wrap:wrap">
-        <div style="flex:1;min-width:260px" class="feature">
-          <h4>Auto Caption</h4>
-          <p class="muted">Generate subtitle otomatis dari audio/video.</p>
-        </div>
-        <div style="flex:1;min-width:260px" class="feature">
-          <h4>AI Summarizer</h4>
-          <p class="muted">Ringkasan cepat untuk artikel dan video panjang.</p>
-        </div>
-        <div style="flex:1;min-width:260px" class="feature">
-          <h4>Clipper Tools</h4>
-          <p class="muted">Potong otomatis highlight untuk TikTok/Shorts.</p>
-        </div>
-      </div>
-    </section>
-
-    <!-- kontak -->
-    <section id="kontak" style="margin-top:28px">
-      <div class="card" style="background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));border-radius:12px;padding:18px;box-shadow:0 8px 20px rgba(2,6,20,0.6)">
-        <h3>Butuh Bantuan atau Mau Order?</h3>
-        <p class="muted">Chat via WhatsApp atau isi form kontak kami.</p>
-        <div style="margin-top:12px;display:flex;gap:10px;flex-wrap:wrap">
-          <a class="btn btn-primary" href="https://wa.me/6282269238794?text=Halo%20kak%20Juju,%20saya%20mau%20order" style="font-size:14px">Chat WhatsApp</a>
-          <a class="btn btn-ghost" href="contact.html" style="font-size:14px">Isi Form</a>
-        </div>
-      </div>
-    </section>
-
-    <!-- footer -->
-    <footer>
-      Juju AI • Dibangun dengan GitHub Pages • Ganti nomor WA dan link chat di kode sesuai milikmu.
-    </footer>
-
+    <div class="footer">
+      Butuh fitur lain? (merge / compress / subtitle) — <a class="link" href="jasa.html">Order jasa / minta fitur</a>
+    </div>
   </div>
+
+  <!-- FFmpeg.wasm -->
+  <script src="https://unpkg.com/@ffmpeg/ffmpeg@0.11.6/dist/ffmpeg.min.js"></script>
+  <script>
+    const { createFFmpeg, fetchFile } = FFmpeg;
+    const ffmpeg = createFFmpeg({ log: true });
+    const fileInput = document.getElementById('fileInput');
+    const fileNameEl = document.getElementById('fileName');
+    const player = document.getElementById('player');
+    const startRange = document.getElementById('startRange');
+    const endRange = document.getElementById('endRange');
+    const startInput = document.getElementById('startInput');
+    const endInput = document.getElementById('endInput');
+    const durationEl = document.getElementById('duration');
+    const trimBtn = document.getElementById('trimBtn');
+    const downloadBtn = document.getElementById('downloadBtn');
+    const progBar = document.getElementById('progBar');
+    const logEl = document.getElementById('log');
+    const ffstat = document.getElementById('ffstat');
+    let currentFile = null;
+    let videoDuration = 0;
+
+    // Load FFmpeg async on user gesture (save resources)
+    async function loadFFmpeg() {
+      if (!ffmpeg.isLoaded()) {
+        ffstat.innerText = 'Memuat...';
+        await ffmpeg.load();
+        ffstat.innerText = 'Siap';
+      }
+    }
+
+    // Handle file selection
+    fileInput.addEventListener('change', async (e) => {
+      const f = e.target.files[0];
+      if (!f) return;
+      currentFile = f;
+      fileNameEl.innerText = `${f.name} • ${Math.round(f.size/1024/1024)} MB`;
+      const url = URL.createObjectURL(f);
+      player.src = url;
+      player.load();
+      player.onloadedmetadata = () => {
+        videoDuration = player.duration;
+        durationEl.innerText = videoDuration.toFixed(2);
+        // setup ranges
+        startRange.min = 0; startRange.max = videoDuration; startRange.value = 0;
+        endRange.min = 0; endRange.max = videoDuration; endRange.value = Math.min(10, videoDuration);
+        startInput.value = 0; endInput.value = Math.min(10, videoDuration);
+      };
+      // auto-load ffmpeg but avoid loading without need
+      await loadFFmpeg();
+    });
+
+    // Sync sliders & inputs
+    function syncFromRange() {
+      startInput.value = parseFloat(startRange.value).toFixed(2);
+      endInput.value = parseFloat(endRange.value).toFixed(2);
+    }
+    function syncFromInput() {
+      let s = parseFloat(startInput.value) || 0;
+      let e = parseFloat(endInput.value) || 0;
+      if (s < 0) s = 0;
+      if (e > videoDuration) e = videoDuration;
+      if (s >= e) e = Math.min(s + 0.5, videoDuration);
+      startRange.value = s;
+      endRange.value = e;
+    }
+    startRange.addEventListener('input', () => { syncFromRange(); player.currentTime = parseFloat(startRange.value); });
+    endRange.addEventListener('input', () => { syncFromRange(); player.currentTime = parseFloat(endRange.value); });
+    startInput.addEventListener('change', () => { syncFromInput(); });
+    endInput.addEventListener('change', () => { syncFromInput(); });
+
+    // playback buttons
+    document.getElementById('playBtn').addEventListener('click', () => player.play());
+    document.getElementById('pauseBtn').addEventListener('click', () => player.pause());
+    document.getElementById('resetBtn').addEventListener('click', () => {
+      if (!videoDuration) return;
+      startRange.value = 0; endRange.value = Math.min(10, videoDuration);
+      startInput.value = 0; endInput.value = Math.min(10, videoDuration);
+      player.currentTime = 0;
+    });
+
+    // Trim action
+    trimBtn.addEventListener('click', async () => {
+      if (!currentFile) { alert('Pilih file video dulu.'); return; }
+      const s = parseFloat(startInput.value);
+      const e = parseFloat(endInput.value);
+      if (isNaN(s) || isNaN(e) || s < 0 || e <= s) { alert('Range tidak valid'); return; }
+
+      // Confirm size & warn
+      if (currentFile.size > 150*1024*1024) {
+        const ok = confirm('File besar bisa membutuhkan banyak memori & waktu. Lanjutkan?');
+        if (!ok) return;
+      }
+
+      trimBtn.disabled = true;
+      trimBtn.innerText = 'Memproses...';
+      progBar.style.width = '0%';
+      logEl.innerText = 'Menulis file ke memori...';
+
+      try {
+        // Write file to FS
+        const name = 'input_video';
+        const ext = currentFile.name.split('.').pop().slice(0,5) || 'mp4';
+        const inName = `${name}.${ext}`;
+
+        ffmpeg.FS('writeFile', inName, await fetchFile(currentFile));
+        logEl.innerText = 'Menjalankan ffmpeg...';
+
+        // hook progress
+        ffmpeg.setProgress(({ ratio }) => {
+          const pct = Math.min(100, Math.round(ratio * 100));
+          progBar.style.width = pct + '%';
+          logEl.innerText = `Proses ffmpeg: ${pct}%`;
+        });
+
+        // Use -ss and -to with copy codec for speed (may be less frame-exact)
+        const outName = 'trimmed_output.mp4';
+        const duration = (e - s).toFixed(2);
+
+        // run ffmpeg: fast trimming with copy
+        await ffmpeg.run(
+          '-i', inName,
+          '-ss', String(s),
+          '-t', String(duration),
+          '-c', 'copy',
+          outName
+        );
+
+        logEl.innerText = 'Membaca hasil...';
+        const data = ffmpeg.FS('readFile', outName);
+        const blob = new Blob([data.buffer], { type: 'video/mp4' });
+        const url = URL.createObjectURL(blob);
+
+        // create download link and auto click
+        downloadBtn.style.display = 'inline-flex';
+        downloadBtn.href = url;
+        downloadBtn.download = `trimmed_${currentFile.name.replace(/\s/g,'_')}`;
+        downloadBtn.innerText = 'Download Hasil';
+        downloadBtn.classList.add('btn-primary');
+        downloadBtn.onclick = () => { setTimeout(() => URL.revokeObjectURL(url), 10000); };
+
+        // auto-trigger download
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = downloadBtn.download;
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+
+        logEl.innerText = 'Selesai. File siap di-download.';
+      } catch (err) {
+        console.error(err);
+        alert('Terjadi kesalahan saat proses. Coba ulang atau gunakan file lebih kecil.');
+        logEl.innerText = 'Error: ' + (err && err.message ? err.message : String(err));
+      } finally {
+        trimBtn.disabled = false;
+        trimBtn.innerText = 'Trim Video';
+      }
+    });
+
+    // lazy load ffmpeg upon first interaction (user clicks upload)
+    document.querySelector('label[for="fileInput"]').addEventListener('click', () => {
+      loadFFmpeg().catch(e => console.error(e));
+    });
+
+  </script>
 </body>
 </html>
