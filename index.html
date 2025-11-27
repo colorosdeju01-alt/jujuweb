@@ -1,160 +1,231 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Juju AI – Smart Assistant</title>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Juju AI — Futuristic Assistant</title>
+
+  <!-- Font -->
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
 
   <style>
-    @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap');
-
-    body {
-      margin: 0;
-      font-family: 'Poppins', sans-serif;
-      background: #f5f6fa;
-      color: #333;
+    :root{
+      --bg1: #0f1724;
+      --accent1: #00d4ff; /* cyan */
+      --accent2: #7b61ff; /* purple */
+      --glass: rgba(255,255,255,0.06);
+      --glass-2: rgba(255,255,255,0.04);
+      --text: #e6f0ff;
+    }
+    html,body{height:100%;margin:0;font-family:'Poppins',system-ui,Arial;color:var(--text);background:linear-gradient(180deg,var(--bg1) 0%, #071025 100%);-webkit-font-smoothing:antialiased;}
+    /* Background neon gradient + subtle grid */
+    body::before{
+      content:"";
+      position:fixed;inset:0;
+      background:
+        radial-gradient(600px 200px at 10% 10%, rgba(123,97,255,0.06), transparent 10%),
+        radial-gradient(400px 140px at 90% 90%, rgba(0,212,255,0.04), transparent 10%);
+      pointer-events:none;
+      z-index:0;
+      mix-blend-mode:screen;
     }
 
-    /* NAVBAR */
-    nav {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 15px 25px;
-      background: white;
-      box-shadow: 0 2px 10px rgba(0,0,0,0.05);
-      position: sticky;
-      top: 0;
-      z-index: 10;
-    }
+    /* Container */
+    .wrap{position:relative;z-index:1;max-width:1100px;margin:30px auto;padding:28px;}
 
-    nav h1 {
-      margin: 0;
-      font-size: 22px;
-      color: #ff2d55;
-      font-weight: 600;
-    }
+    /* NAV */
+    nav{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:14px 18px;border-radius:12px;background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));box-shadow:0 6px 18px rgba(3,7,18,0.6);backdrop-filter: blur(6px);}
+    .logo{display:flex;align-items:center;gap:12px}
+    .logo .mark{width:44px;height:44px;border-radius:10px;display:grid;place-items:center;background:linear-gradient(135deg,var(--accent1),var(--accent2));box-shadow:0 6px 22px rgba(124,97,255,0.12), 0 1px 0 rgba(255,255,255,0.02)}
+    .logo h1{font-size:18px;margin:0;font-weight:700;color:var(--text)}
+    .navlinks{display:flex;gap:14px;align-items:center}
+    .navlinks a{color:rgba(230,240,255,0.9);text-decoration:none;font-weight:600;padding:8px 12px;border-radius:8px}
+    .navlinks a:hover{background:linear-gradient(90deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));box-shadow:0 6px 14px rgba(2,6,25,0.4)}
 
-    nav a {
-      margin-left: 15px;
-      text-decoration: none;
-      font-weight: 500;
-      color: #333;
-    }
+    /* HERO layout */
+    .hero{display:grid;grid-template-columns:1fr 420px;gap:28px;align-items:center;margin-top:28px}
+    @media(max-width:880px){.hero{grid-template-columns:1fr;}.navlinks{display:none}}
 
-    /* HERO SECTION */
-    .hero {
-      text-align: center;
-      padding: 90px 20px;
-      background: white;
-    }
+    .hero-left{padding:14px}
+    .kicker{display:inline-block;padding:8px 12px;border-radius:999px;background:linear-gradient(90deg,var(--accent1),var(--accent2));color:#031024;font-weight:700;font-size:12px;box-shadow:0 8px 30px rgba(0,212,255,0.08)}
+    h2{font-size:36px;margin:18px 0 12px;line-height:1.05;text-shadow:0 6px 30px rgba(0,0,0,0.45)}
+    p.lead{opacity:0.9;margin:0 0 18px;color:rgba(230,240,255,0.9)}
 
-    .hero h2 {
-      font-size: 34px;
-      font-weight: 600;
-      margin-bottom: 10px;
-    }
+    .cta-row{display:flex;gap:12px;flex-wrap:wrap}
+    .btn{display:inline-flex;align-items:center;gap:10px;padding:12px 18px;border-radius:10px;font-weight:700;text-decoration:none;border:1px solid rgba(255,255,255,0.04)}
+    .btn-primary{background:linear-gradient(90deg,var(--accent1),var(--accent2));color:#041425;box-shadow:0 14px 40px rgba(123,97,255,0.12)}
+    .btn-ghost{background:transparent;color:var(--text);border:1px solid rgba(255,255,255,0.06)}
 
-    .hero p {
-      font-size: 18px;
-      opacity: 0.7;
-    }
+    /* hero card right */
+    .hero-right{display:grid;place-items:center;padding:6px}
+    .robot-card{width:100%;max-width:420px;border-radius:16px;padding:22px;background:linear-gradient(180deg,var(--glass),var(--glass-2));box-shadow:0 8px 30px rgba(2,8,20,0.6);backdrop-filter: blur(8px);position:relative;overflow:hidden}
+    .robot-card .robot-wrap{display:flex;gap:16px;align-items:center}
+    .robot-svg{width:140px;height:140px;flex:0 0 140px;filter:drop-shadow(0 10px 30px rgba(0,212,255,0.08));transform:translateY(-4px);animation:float 6s ease-in-out infinite}
+    @keyframes float{0%{transform:translateY(-4px)}50%{transform:translateY(6px)}100%{transform:translateY(-4px)}}
 
-    .btn {
-      display: inline-block;
-      padding: 14px 30px;
-      margin-top: 25px;
-      background: #ff2d55;
-      color: white;
-      border-radius: 10px;
-      text-decoration: none;
-      font-size: 18px;
-      font-weight: 500;
-    }
+    /* neon ring */
+    .neon-ring{position:absolute;right:-60px;top:-60px;width:220px;height:220px;border-radius:50%;background:conic-gradient(from 120deg at 50% 50%, rgba(0,212,255,0.08), rgba(123,97,255,0.08));filter:blur(40px);opacity:0.9}
 
-    /* FITUR */
-    .features {
-      padding: 50px 20px;
-      text-align: center;
-    }
+    .robot-info h3{margin:0;font-size:20px}
+    .robot-info p{opacity:0.85;margin-top:8px;font-size:14px;color:rgba(230,240,255,0.9)}
 
-    .features h3 {
-      font-size: 28px;
-      margin-bottom: 25px;
-    }
+    /* features list */
+    .features{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin-top:28px}
+    @media(max-width:900px){.features{grid-template-columns:1fr}}
+    .feature{background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));padding:18px;border-radius:12px;box-shadow:0 8px 18px rgba(2,6,20,0.5);border:1px solid rgba(255,255,255,0.02)}
+    .feature h4{margin:0 0 8px}
+    .muted{color:rgba(230,240,255,0.7);font-size:14px}
 
-    .feature-box {
-      background: white;
-      margin: 15px auto;
-      padding: 25px;
-      border-radius: 12px;
-      max-width: 600px;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.05);
-    }
+    /* footer */
+    footer{margin-top:40px;padding:20px;border-radius:12px;text-align:center;color:rgba(230,240,255,0.65);font-size:13px;background:linear-gradient(180deg, rgba(255,255,255,0.01), rgba(255,255,255,0.01));box-shadow:0 10px 30px rgba(2,6,20,0.55)}
 
-    /* FOOTER */
-    footer {
-      margin-top: 50px;
-      padding: 18px;
-      text-align: center;
-      color: #777;
-      font-size: 14px;
-    }
+    /* small helpers */
+    .small{font-size:13px;color:rgba(230,240,255,0.7)}
+    .pill{padding:6px 10px;border-radius:999px;background:rgba(255,255,255,0.02);font-weight:600;color:var(--text);display:inline-block}
 
   </style>
 </head>
-
 <body>
+  <div class="wrap">
 
-  <!-- NAVBAR -->
-  <nav>
-    <h1>Juju AI</h1>
-    <div>
-      <a href="#fitur">Fitur</a>
-      <a href="#chat">Chat</a>
-      <a href="#kontak">Kontak</a>
-    </div>
-  </nav>
+    <!-- NAV -->
+    <nav aria-label="Main navigation">
+      <div class="logo">
+        <div class="mark" aria-hidden="true">
+          <!-- small icon -->
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <rect x="3" y="4" width="18" height="4" rx="1.5" fill="white" opacity="0.95"/>
+            <rect x="3" y="10" width="14" height="4" rx="1.5" fill="white" opacity="0.9"/>
+            <rect x="3" y="16" width="10" height="4" rx="1.5" fill="white" opacity="0.85"/>
+          </svg>
+        </div>
+        <h1>Juju AI</h1>
+      </div>
 
-  <!-- HERO SECTION -->
-  <section class="hero">
-    <h2>Asisten AI Pintar</h2>
-    <p>Bertanya apa saja, kapan saja. Cepat, mudah, dan gratis.</p>
+      <div class="navlinks" role="navigation" aria-label="secondary">
+        <a href="index.html#fitur">Fitur</a>
+        <a href="jasa.html">Jasa</a>
+        <a href="index.html#kontak">Kontak</a>
+        <a href="https://colorosdeju01-alt.github.io/ai-bot/" class="btn btn-primary" style="padding:8px 14px;font-size:14px">Buka Chat</a>
+      </div>
+    </nav>
 
-    <a href="#chat" class="btn">Mulai Chat</a>
-  </section>
+    <!-- HERO -->
+    <section class="hero" aria-labelledby="hero-title">
+      <div class="hero-left">
+        <span class="kicker">Futuristic · AI</span>
+        <h2 id="hero-title">Asisten AI Futuristik — Jawaban Instan & Cerdas</h2>
+        <p class="lead">Juju AI membantu membuat script, caption, ringkasan, dan potongan video otomatis. Cocok untuk content creator & developer.</p>
 
-  <!-- FITUR -->
-  <section class="features" id="fitur">
-    <h3>Fitur Utama</h3>
+        <div class="cta-row" style="margin-top:16px">
+          <a class="btn btn-primary" href="https://colorosdeju01-alt.github.io/ai-bot/">
+            <!-- svg chat icon -->
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M21 15a2 2 0 0 1-2 2H8l-5 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" stroke="#041425" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            Mulai Chat
+          </a>
 
-    <div class="feature-box">
-      <strong>⚡ Respon Cepat</strong>
-      <p>Didukung AI modern untuk jawaban instan.</p>
-    </div>
+          <a class="btn btn-ghost" href="jasa.html">Lihat Jasa</a>
 
-    <div class="feature-box">
-      <strong>🤖 Chat Bot Cerdas</strong>
-      <p>Bantu kamu tanya apa saja dengan mudah.</p>
-    </div>
+          <a class="btn btn-ghost" href="contact.html">Hubungi</a>
+        </div>
 
-    <div class="feature-box">
-      <strong>📱 Desain Mobile</strong>
-      <p>Tampilan nyaman digunakan di HP.</p>
-    </div>
-  </section>
+        <div style="margin-top:20px" class="small">Atau coba: <span class="pill">Auto-caption</span> • <span class="pill">AI Summary</span> • <span class="pill">Clipper tools</span></div>
 
-  <!-- CHAT SECTION -->
-  <section id="chat" class="hero">
-    <h2>Chat Dengan Juju AI</h2>
-    <p>Klik tombol di bawah untuk mulai chat.</p>
+        <!-- features (mobile short) -->
+        <div class="features" style="margin-top:22px">
+          <div class="feature">
+            <h4>⚡ Respon Cepat</h4>
+            <p class="muted">Jawaban singkat, padat, dan relevan.</p>
+          </div>
+          <div class="feature">
+            <h4>🔒 Aman & Ringan</h4>
+            <p class="muted">Website cepat, optimasi mobile-friendly.</p>
+          </div>
+          <div class="feature">
+            <h4>🛠️ Mudah Digunakan</h4>
+            <p class="muted">Integrasi cepat ke WhatsApp & Formspree.</p>
+          </div>
+        </div>
+      </div>
 
-    <a class="btn" href="https://colorosdeju01-alt.github.io/ai-bot/">Buka Chat</a>
-  </section>
+      <!-- HERO RIGHT: robot card -->
+      <div class="hero-right" aria-hidden="true">
+        <div class="robot-card">
+          <div class="neon-ring" aria-hidden="true"></div>
 
-  <footer>
-    © 2025 Juju AI – All rights reserved.
-  </footer>
+          <div class="robot-wrap">
+            <!-- ROBOT SVG (inline) -->
+            <svg class="robot-svg" viewBox="0 0 256 256" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Robot illustration">
+              <defs>
+                <linearGradient id="g1" x1="0" x2="1">
+                  <stop offset="0" stop-color="#00d4ff"/>
+                  <stop offset="1" stop-color="#7b61ff"/>
+                </linearGradient>
+              </defs>
+              <rect x="48" y="48" width="160" height="160" rx="28" fill="url(#g1)" opacity="0.12"/>
+              <rect x="64" y="64" width="128" height="110" rx="16" fill="#081527"/>
+              <rect x="88" y="84" width="80" height="18" rx="8" fill="#0f2130" />
+              <!-- eyes -->
+              <g transform="translate(80,112)">
+                <circle cx="0" cy="0" r="10" fill="#00d4ff" opacity="0.98"/>
+                <circle cx="72" cy="0" r="10" fill="#7b61ff" opacity="0.98"/>
+              </g>
+              <!-- mouth -->
+              <rect x="96" y="138" width="64" height="10" rx="5" fill="#0a1b27" />
+              <!-- antenna -->
+              <rect x="120" y="44" width="16" height="20" rx="4" fill="#00d4ff" opacity="0.9"/>
+              <circle cx="128" cy="40" r="6" fill="#7b61ff"/>
+            </svg>
 
+            <div class="robot-info">
+              <h3>Juju Bot</h3>
+              <p>Bot AI ringan untuk ringkasan, caption, dan potongan video. Cocok untuk creator.</p>
+            </div>
+          </div>
+
+          <div style="margin-top:16px;display:flex;gap:10px;align-items:center">
+            <a class="btn btn-primary" href="https://colorosdeju01-alt.github.io/ai-bot/" style="font-size:14px;padding:10px 12px">Coba Sekarang</a>
+            <a class="btn btn-ghost" href="jasa.html" style="font-size:14px;padding:10px 12px">Order Jasa</a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- more features -->
+    <section id="fitur" style="margin-top:28px">
+      <div style="display:flex;gap:18px;flex-wrap:wrap">
+        <div style="flex:1;min-width:260px" class="feature">
+          <h4>Auto Caption</h4>
+          <p class="muted">Generate subtitle otomatis dari audio/video.</p>
+        </div>
+        <div style="flex:1;min-width:260px" class="feature">
+          <h4>AI Summarizer</h4>
+          <p class="muted">Ringkasan cepat untuk artikel dan video panjang.</p>
+        </div>
+        <div style="flex:1;min-width:260px" class="feature">
+          <h4>Clipper Tools</h4>
+          <p class="muted">Potong otomatis highlight untuk TikTok/Shorts.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- kontak -->
+    <section id="kontak" style="margin-top:28px">
+      <div class="card" style="background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));border-radius:12px;padding:18px;box-shadow:0 8px 20px rgba(2,6,20,0.6)">
+        <h3>Butuh Bantuan atau Mau Order?</h3>
+        <p class="muted">Chat via WhatsApp atau isi form kontak kami.</p>
+        <div style="margin-top:12px;display:flex;gap:10px;flex-wrap:wrap">
+          <a class="btn btn-primary" href="https://wa.me/6282269238794?text=Halo%20kak%20Juju,%20saya%20mau%20order" style="font-size:14px">Chat WhatsApp</a>
+          <a class="btn btn-ghost" href="contact.html" style="font-size:14px">Isi Form</a>
+        </div>
+      </div>
+    </section>
+
+    <!-- footer -->
+    <footer>
+      Juju AI • Dibangun dengan GitHub Pages • Ganti nomor WA dan link chat di kode sesuai milikmu.
+    </footer>
+
+  </div>
 </body>
 </html>
