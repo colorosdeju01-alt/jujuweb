@@ -1,31 +1,34 @@
-const API_URL = "https://juju-ai.colorosdeju01.workers.dev/";
+async function kirimKeAI(pesanUser) {
+    const API_URL = "https://api.monkedev.com/fun/chat"; 
+
+    const response = await fetch(API_URL + "?msg=" + encodeURIComponent(pesanUser));
+    const data = await response.json();
+
+    return data.response || "AI tidak bisa menjawab.";
+}
 
 async function sendMessage() {
-  let input = document.getElementById("input");
-  let messages = document.getElementById("messages");
+    let input = document.getElementById("userInput");
+    if (input.value.trim() === "") return;
 
-  // tampilkan pesan user
-  let userBubble = document.createElement("div");
-  userBubble.className = "bubble user";
-  userBubble.innerText = input.value;
-  messages.appendChild(userBubble);
+    addMessage(input.value, "user");
 
-  // kirim ke worker
-  let res = await fetch(API_URL, {
-    method: "POST",
-    headers: {"Content-Type": "application/json"},
-    body: JSON.stringify({ message: input.value })
-  });
+    addMessage("⏳ Sedang berpikir...", "ai");
 
-  let data = await res.json();
-  let reply = data.choices?.[0]?.message?.content || "Maaf, terjadi error.";
+    let jawaban = await kirimKeAI(input.value);
 
-  // tampilkan balasan bot
-  let botBubble = document.createElement("div");
-  botBubble.className = "bubble bot";
-  botBubble.innerText = reply;
-  messages.appendChild(botBubble);
+    // Hapus loading
+    let chat = document.getElementById("chat");
+    chat.removeChild(chat.lastChild);
 
-  input.value = "";
-  messages.scrollTop = messages.scrollHeight;
+    addMessage(jawaban, "ai");
+}
+
+function addMessage(text, sender) {
+    let chat = document.getElementById("chat");
+    let msg = document.createElement("div");
+    msg.className = "message " + sender;
+    msg.innerText = text;
+    chat.appendChild(msg);
+    chat.scrollTop = chat.scrollHeight;
 }
