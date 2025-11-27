@@ -1,14 +1,136 @@
 <!DOCTYPE html>
-<html>
+<html lang="id">
 <head>
-  <title>Juju AI Chat</title>
-  <meta charset="UTF-8">
-  <style>
-    body { font-family: Arial; background: #111; color: white; padding: 20px; }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Chat Bot Juju</title>
+
+<style>
+    body {
+        margin: 0;
+        background: #0d0f1a;
+        font-family: Arial, sans-serif;
+        color: #fff;
+    }
+
+    header {
+        background: #1e1b4b;
+        text-align: center;
+        padding: 15px;
+        font-size: 20px;
+        font-weight: bold;
+        color: #c7d2fe;
+        box-shadow: 0px 0px 10px #000;
+    }
+
+    #chat-box {
+        height: 70vh;
+        overflow-y: auto;
+        padding: 15px;
+    }
+
+    .msg {
+        max-width: 75%;
+        padding: 10px 15px;
+        border-radius: 12px;
+        margin: 10px 0;
+        line-height: 1.4;
+    }
+
+    .user {
+        background: #4f46e5;
+        margin-left: auto;
+        text-align: right;
+    }
+
+    .bot {
+        background: #27284d;
+        margin-right: auto;
+        text-align: left;
+    }
+
+    #input-area {
+        display: flex;
+        padding: 10px;
+        background: #111428;
+    }
+
+    #input-area input {
+        flex: 1;
+        padding: 12px;
+        border-radius: 8px;
+        border: none;
+        background: #1e2239;
+        color: white;
+    }
+
+    #input-area button {
+        padding: 12px 20px;
+        margin-left: 10px;
+        background: #4f46e5;
+        border: none;
+        border-radius: 8px;
+        color: white;
+        font-weight: bold;
+        cursor: pointer;
+    }
+
+    #input-area button:hover {
+        background: #6366f1;
+    }
+</style>
+
 </head>
 <body>
-  <h2>Selamat datang di Juju AI</h2>
-  <p>Halaman chat AI sedang dibangun.</p>
+
+<header>🤖 Chat Bot Juju</header>
+
+<div id="chat-box"></div>
+
+<div id="input-area">
+    <input type="text" id="input" placeholder="Ketik pesan..." onkeydown="if(event.key==='Enter') kirim()">
+    <button onclick="kirim()">Kirim</button>
+</div>
+
+<script>
+function tampilkanPesan(teks, tipe) {
+    let box = document.getElementById("chat-box");
+    let div = document.createElement("div");
+    div.className = "msg " + tipe;
+    div.innerText = teks;
+    box.appendChild(div);
+    box.scrollTop = box.scrollHeight;
+}
+
+function jawabanBot(input) {
+    input = input.toLowerCase();
+
+    if(input.includes("halo") || input.includes("hai")) 
+        return "Halo! Ada yang bisa aku bantu? 😊";
+
+    if(input.includes("siapa kamu"))
+        return "Aku adalah Bot Juju, asisten AI-mu! 🤖";
+
+    if(input.includes("buatkan"))
+        return "Baik, aku bisa buatkan! Tinggal jelasin detailnya.";
+
+    return "Maaf, aku belum mengerti. Bisa ulangi? 😅";
+}
+
+function kirim() {
+    let input = document.getElementById("input");
+    let teks = input.value.trim();
+    if(teks === "") return;
+
+    tampilkanPesan(teks, "user");
+    input.value = "";
+
+    setTimeout(() => {
+        let balasan = jawabanBot(teks);
+        tampilkanPesan(balasan, "bot");
+    }, 400);
+}
+</script>
+
 </body>
 </html>
