@@ -1,289 +1,125 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Juju AI — Video Trimmer</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bot Juju - AI Assistant</title>
+    <style>
+        body {
+            margin: 0;
+            font-family: 'Poppins', sans-serif;
+            background: radial-gradient(circle at top, #0a0f24, #000000 80%);
+            color: white;
+            overflow-x: hidden;
+        }
 
-  <!-- Font -->
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+        header {
+            padding: 20px;
+            text-align: center;
+            font-size: 26px;
+            font-weight: 700;
+            color: cyan;
+            letter-spacing: 2px;
+            text-shadow: 0 0 10px cyan;
+        }
 
-  <style>
-    :root{
-      --bg:#071025;
-      --card: rgba(255,255,255,0.03);
-      --accent1:#00d4ff;
-      --accent2:#7b61ff;
-      --glass: rgba(255,255,255,0.04);
-      --text:#e6f0ff;
-    }
-    html,body{height:100%;margin:0;font-family:'Poppins',sans-serif;background:linear-gradient(180deg,var(--bg), #04101b);color:var(--text);-webkit-font-smoothing:antialiased}
-    .wrap{max-width:1100px;margin:28px auto;padding:20px}
-    header{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:18px}
-    header h1{margin:0;font-size:20px;color:var(--accent2)}
-    .card{background:linear-gradient(180deg,var(--card), rgba(255,255,255,0.01));padding:18px;border-radius:12px;box-shadow:0 8px 30px rgba(2,6,20,0.6);border:1px solid rgba(255,255,255,0.02)}
-    .top-row{display:flex;gap:16px;align-items:center;flex-wrap:wrap}
-    .u-file{display:flex;gap:10px;align-items:center}
-    input[type=file]{display:block}
-    .video-area{display:grid;grid-template-columns:1fr 360px;gap:18px;margin-top:18px}
-    @media(max-width:980px){.video-area{grid-template-columns:1fr}}
-    video{width:100%;border-radius:10px;background:#000;max-height:480px}
-    .controls{display:flex;flex-direction:column;gap:12px}
-    .range-row{display:flex;gap:8px;align-items:center}
-    input[type=range]{width:100%}
-    .btn{display:inline-flex;align-items:center;gap:8px;padding:10px 14px;border-radius:10px;font-weight:600;text-decoration:none;border:1px solid rgba(255,255,255,0.04);cursor:pointer}
-    .btn-primary{background:linear-gradient(90deg,var(--accent1),var(--accent2));color:#041425;box-shadow:0 12px 34px rgba(123,97,255,0.08)}
-    .btn-ghost{background:transparent;color:var(--text)}
-    .small{font-size:13px;color:rgba(230,240,255,0.8)}
-    .progress{height:10px;background:rgba(255,255,255,0.03);border-radius:8px;overflow:hidden}
-    .progress > i{display:block;height:100%;width:0%;background:linear-gradient(90deg,var(--accent1),var(--accent2));transition:width 0.2s}
-    .meta{font-size:13px;color:rgba(230,240,255,0.75)}
-    .footer{margin-top:18px;text-align:center;color:rgba(230,240,255,0.6);font-size:13px}
-    .note{background:linear-gradient(180deg, rgba(255,255,255,0.01), rgba(255,255,255,0.01));padding:10px;border-radius:8px;color:rgba(230,240,255,0.8)}
-    a.link{color:var(--accent1);text-decoration:none;font-weight:600}
-  </style>
+        .hero {
+            text-align: center;
+            padding: 40px 20px;
+        }
+
+        .hero img {
+            width: 200px;
+            filter: drop-shadow(0 0 20px cyan);
+            animation: float 3s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-12px); }
+        }
+
+        .title {
+            font-size: 36px;
+            font-weight: 700;
+            margin-top: 20px;
+            text-shadow: 0 0 15px cyan;
+        }
+
+        .subtitle {
+            font-size: 18px;
+            opacity: 0.8;
+            max-width: 400px;
+            margin: 10px auto 30px;
+        }
+
+        .btn {
+            background: cyan;
+            padding: 12px 30px;
+            border-radius: 50px;
+            color: black;
+            font-weight: 600;
+            text-decoration: none;
+            display: inline-block;
+            transition: 0.3s;
+            box-shadow: 0 0 20px cyan;
+        }
+
+        .btn:hover {
+            background: white;
+            box-shadow: 0 0 30px white;
+        }
+
+        .features {
+            margin-top: 70px;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .feature-box {
+            background: rgba(0, 255, 255, 0.05);
+            padding: 20px;
+            border-radius: 15px;
+            margin: 15px auto;
+            max-width: 300px;
+            border: 1px solid rgba(0,255,255,0.3);
+            box-shadow: 0 0 15px rgba(0,255,255,0.3);
+        }
+
+        footer {
+            margin-top: 50px;
+            padding: 20px;
+            text-align: center;
+            border-top: 1px solid rgba(255,255,255,0.2);
+            opacity: 0.6;
+        }
+    </style>
 </head>
 <body>
-  <div class="wrap">
-    <header>
-      <h1>Juju AI — Video Trimmer</h1>
-      <div class="small">Client-side • Tanpa watermark • Gratis</div>
-    </header>
 
-    <div class="card">
-      <div class="top-row">
-        <div class="u-file">
-          <label class="btn btn-ghost" for="fileInput">➕ Upload Video</label>
-          <input id="fileInput" type="file" accept="video/*" style="display:none">
-          <div id="fileName" class="meta">Belum ada file terpilih</div>
-        </div>
+<header>🤖 BOT JUJU AI</header>
 
-        <div style="margin-left:auto" id="ffmpegStatus" class="meta">FFmpeg: <span id="ffstat">Belum dimuat</span></div>
-      </div>
-
-      <div class="video-area">
-        <div>
-          <video id="player" controls preload="metadata" crossorigin="anonymous">
-            <!-- source ditambahkan via JS -->
-          </video>
-
-          <div style="margin-top:10px;display:flex;gap:10px;align-items:center;flex-wrap:wrap">
-            <button id="playBtn" class="btn btn-ghost">▶ Play</button>
-            <button id="pauseBtn" class="btn btn-ghost">⏸ Pause</button>
-            <button id="resetBtn" class="btn btn-ghost">↺ Reset Range</button>
-            <div style="margin-left:auto" class="meta">Durasi: <span id="duration">0.0</span> s</div>
-          </div>
-
-          <div style="margin-top:12px" class="note">
-            <div class="small">Pilih range potong dengan slider atau input detik. Setelah trim, klik <strong>Trim Video</strong> lalu tunggu proses sampai selesai.</div>
-          </div>
-        </div>
-
-        <div class="controls">
-          <div>
-            <label class="meta">Start (detik)</label>
-            <div class="range-row">
-              <input id="startRange" type="range" min="0" max="100" step="0.01" value="0">
-              <input id="startInput" type="number" min="0" step="0.01" value="0" style="width:90px;padding:8px;border-radius:8px;background:transparent;border:1px solid rgba(255,255,255,0.04);color:var(--text)">
-            </div>
-          </div>
-
-          <div>
-            <label class="meta">End (detik)</label>
-            <div class="range-row">
-              <input id="endRange" type="range" min="0" max="100" step="0.01" value="5">
-              <input id="endInput" type="number" min="0" step="0.01" value="5" style="width:90px;padding:8px;border-radius:8px;background:transparent;border:1px solid rgba(255,255,255,0.04);color:var(--text)">
-            </div>
-          </div>
-
-          <div>
-            <div class="meta">Hasil potongan akan terdownload otomatis setelah selesai.</div>
-            <div style="margin-top:8px;display:flex;gap:10px">
-              <button id="trimBtn" class="btn btn-primary">Trim Video</button>
-              <button id="downloadBtn" class="btn btn-ghost" style="display:none">Download</button>
-            </div>
-          </div>
-
-          <div style="margin-top:8px">
-            <div class="meta">Progress</div>
-            <div class="progress" style="margin-top:6px"><i id="progBar"></i></div>
-            <div id="log" class="meta" style="margin-top:8px"></div>
-          </div>
-
-          <div style="margin-top:12px" class="meta">Keterangan: proses dilakukan di perangkatmu. Jika file besar, proses bisa butuh waktu & memori.</div>
-        </div>
-      </div>
+<section class="hero">
+    <img src="robot.png" alt="Robot AI">
+    <div class="title">Asisten AI Futuristik</div>
+    <div class="subtitle">
+        Bot Juju membantu kamu menulis, membuat konten, menganalisis data, dan membangun website pintar.
     </div>
+    <a class="btn" href="layanan.html">Mulai Gunakan</a>
+</section>
 
-    <div class="footer">
-      Butuh fitur lain? (merge / compress / subtitle) — <a class="link" href="jasa.html">Order jasa / minta fitur</a>
-    </div>
-  </div>
+<section class="features">
+    <h2>🔥 Fitur Unggulan</h2>
+    
+    <div class="feature-box">⚡ Jawaban Cepat & Akurat</div>
+    <div class="feature-box">📄 Generate Artikel & Ide Konten</div>
+    <div class="feature-box">💬 Chatbot Pintar untuk Website</div>
+    <div class="feature-box">🔍 Analisis & Editing</div>
+</section>
 
-  <!-- FFmpeg.wasm -->
-  <script src="https://unpkg.com/@ffmpeg/ffmpeg@0.11.6/dist/ffmpeg.min.js"></script>
-  <script>
-    const { createFFmpeg, fetchFile } = FFmpeg;
-    const ffmpeg = createFFmpeg({ log: true });
-    const fileInput = document.getElementById('fileInput');
-    const fileNameEl = document.getElementById('fileName');
-    const player = document.getElementById('player');
-    const startRange = document.getElementById('startRange');
-    const endRange = document.getElementById('endRange');
-    const startInput = document.getElementById('startInput');
-    const endInput = document.getElementById('endInput');
-    const durationEl = document.getElementById('duration');
-    const trimBtn = document.getElementById('trimBtn');
-    const downloadBtn = document.getElementById('downloadBtn');
-    const progBar = document.getElementById('progBar');
-    const logEl = document.getElementById('log');
-    const ffstat = document.getElementById('ffstat');
-    let currentFile = null;
-    let videoDuration = 0;
+<footer>
+    © 2025 Bot Juju — Teknologi AI Masa Depan
+</footer>
 
-    // Load FFmpeg async on user gesture (save resources)
-    async function loadFFmpeg() {
-      if (!ffmpeg.isLoaded()) {
-        ffstat.innerText = 'Memuat...';
-        await ffmpeg.load();
-        ffstat.innerText = 'Siap';
-      }
-    }
-
-    // Handle file selection
-    fileInput.addEventListener('change', async (e) => {
-      const f = e.target.files[0];
-      if (!f) return;
-      currentFile = f;
-      fileNameEl.innerText = `${f.name} • ${Math.round(f.size/1024/1024)} MB`;
-      const url = URL.createObjectURL(f);
-      player.src = url;
-      player.load();
-      player.onloadedmetadata = () => {
-        videoDuration = player.duration;
-        durationEl.innerText = videoDuration.toFixed(2);
-        // setup ranges
-        startRange.min = 0; startRange.max = videoDuration; startRange.value = 0;
-        endRange.min = 0; endRange.max = videoDuration; endRange.value = Math.min(10, videoDuration);
-        startInput.value = 0; endInput.value = Math.min(10, videoDuration);
-      };
-      // auto-load ffmpeg but avoid loading without need
-      await loadFFmpeg();
-    });
-
-    // Sync sliders & inputs
-    function syncFromRange() {
-      startInput.value = parseFloat(startRange.value).toFixed(2);
-      endInput.value = parseFloat(endRange.value).toFixed(2);
-    }
-    function syncFromInput() {
-      let s = parseFloat(startInput.value) || 0;
-      let e = parseFloat(endInput.value) || 0;
-      if (s < 0) s = 0;
-      if (e > videoDuration) e = videoDuration;
-      if (s >= e) e = Math.min(s + 0.5, videoDuration);
-      startRange.value = s;
-      endRange.value = e;
-    }
-    startRange.addEventListener('input', () => { syncFromRange(); player.currentTime = parseFloat(startRange.value); });
-    endRange.addEventListener('input', () => { syncFromRange(); player.currentTime = parseFloat(endRange.value); });
-    startInput.addEventListener('change', () => { syncFromInput(); });
-    endInput.addEventListener('change', () => { syncFromInput(); });
-
-    // playback buttons
-    document.getElementById('playBtn').addEventListener('click', () => player.play());
-    document.getElementById('pauseBtn').addEventListener('click', () => player.pause());
-    document.getElementById('resetBtn').addEventListener('click', () => {
-      if (!videoDuration) return;
-      startRange.value = 0; endRange.value = Math.min(10, videoDuration);
-      startInput.value = 0; endInput.value = Math.min(10, videoDuration);
-      player.currentTime = 0;
-    });
-
-    // Trim action
-    trimBtn.addEventListener('click', async () => {
-      if (!currentFile) { alert('Pilih file video dulu.'); return; }
-      const s = parseFloat(startInput.value);
-      const e = parseFloat(endInput.value);
-      if (isNaN(s) || isNaN(e) || s < 0 || e <= s) { alert('Range tidak valid'); return; }
-
-      // Confirm size & warn
-      if (currentFile.size > 150*1024*1024) {
-        const ok = confirm('File besar bisa membutuhkan banyak memori & waktu. Lanjutkan?');
-        if (!ok) return;
-      }
-
-      trimBtn.disabled = true;
-      trimBtn.innerText = 'Memproses...';
-      progBar.style.width = '0%';
-      logEl.innerText = 'Menulis file ke memori...';
-
-      try {
-        // Write file to FS
-        const name = 'input_video';
-        const ext = currentFile.name.split('.').pop().slice(0,5) || 'mp4';
-        const inName = `${name}.${ext}`;
-
-        ffmpeg.FS('writeFile', inName, await fetchFile(currentFile));
-        logEl.innerText = 'Menjalankan ffmpeg...';
-
-        // hook progress
-        ffmpeg.setProgress(({ ratio }) => {
-          const pct = Math.min(100, Math.round(ratio * 100));
-          progBar.style.width = pct + '%';
-          logEl.innerText = `Proses ffmpeg: ${pct}%`;
-        });
-
-        // Use -ss and -to with copy codec for speed (may be less frame-exact)
-        const outName = 'trimmed_output.mp4';
-        const duration = (e - s).toFixed(2);
-
-        // run ffmpeg: fast trimming with copy
-        await ffmpeg.run(
-          '-i', inName,
-          '-ss', String(s),
-          '-t', String(duration),
-          '-c', 'copy',
-          outName
-        );
-
-        logEl.innerText = 'Membaca hasil...';
-        const data = ffmpeg.FS('readFile', outName);
-        const blob = new Blob([data.buffer], { type: 'video/mp4' });
-        const url = URL.createObjectURL(blob);
-
-        // create download link and auto click
-        downloadBtn.style.display = 'inline-flex';
-        downloadBtn.href = url;
-        downloadBtn.download = `trimmed_${currentFile.name.replace(/\s/g,'_')}`;
-        downloadBtn.innerText = 'Download Hasil';
-        downloadBtn.classList.add('btn-primary');
-        downloadBtn.onclick = () => { setTimeout(() => URL.revokeObjectURL(url), 10000); };
-
-        // auto-trigger download
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = downloadBtn.download;
-        document.body.appendChild(a);
-        a.click();
-        a.remove();
-
-        logEl.innerText = 'Selesai. File siap di-download.';
-      } catch (err) {
-        console.error(err);
-        alert('Terjadi kesalahan saat proses. Coba ulang atau gunakan file lebih kecil.');
-        logEl.innerText = 'Error: ' + (err && err.message ? err.message : String(err));
-      } finally {
-        trimBtn.disabled = false;
-        trimBtn.innerText = 'Trim Video';
-      }
-    });
-
-    // lazy load ffmpeg upon first interaction (user clicks upload)
-    document.querySelector('label[for="fileInput"]').addEventListener('click', () => {
-      loadFFmpeg().catch(e => console.error(e));
-    });
-
-  </script>
 </body>
 </html>
