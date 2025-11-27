@@ -1,21 +1,28 @@
 async function kirimKeAI(pesanUser) {
     const API_URL = "https://api.monkedev.com/fun/chat"; 
 
-    const response = await fetch(API_URL + "?msg=" + encodeURIComponent(pesanUser));
-    const data = await response.json();
+    try {
+        const response = await fetch(API_URL + "?msg=" + encodeURIComponent(pesanUser));
+        const data = await response.json();
 
-    return data.response || "AI tidak bisa menjawab.";
+        return data.response || "AI tidak bisa menjawab.";
+    } catch (e) {
+        return "Terjadi kesalahan, coba lagi.";
+    }
 }
 
 async function sendMessage() {
     let input = document.getElementById("userInput");
-    if (input.value.trim() === "") return;
+    let message = input.value.trim();
 
-    addMessage(input.value, "user");
+    if (message === "") return;
+
+    addMessage(message, "user");
+    input.value = "";
 
     addMessage("⏳ Sedang berpikir...", "ai");
 
-    let jawaban = await kirimKeAI(input.value);
+    let jawaban = await kirimKeAI(message);
 
     // Hapus loading
     let chat = document.getElementById("chat");
@@ -27,8 +34,10 @@ async function sendMessage() {
 function addMessage(text, sender) {
     let chat = document.getElementById("chat");
     let msg = document.createElement("div");
+
     msg.className = "message " + sender;
     msg.innerText = text;
+
     chat.appendChild(msg);
     chat.scrollTop = chat.scrollHeight;
 }
