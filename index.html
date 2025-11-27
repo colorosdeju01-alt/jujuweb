@@ -3,12 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bot Juju - AI Assistant</title>
+    <title>Bot Juju – Asisten AI</title>
+
     <style>
         body {
             margin: 0;
             font-family: 'Poppins', sans-serif;
-            background: radial-gradient(circle at top, #0a0f24, #000000 80%);
+            background: linear-gradient(135deg, #4f46e5, #7c3aed);
             color: white;
             overflow-x: hidden;
         }
@@ -18,9 +19,9 @@
             text-align: center;
             font-size: 26px;
             font-weight: 700;
-            color: cyan;
+            color: #a5b4fc;
             letter-spacing: 2px;
-            text-shadow: 0 0 10px cyan;
+            text-shadow: 0 0 10px rgba(0,0,0,0.3);
         }
 
         .hero {
@@ -30,102 +31,12 @@
 
         .hero img {
             width: 200px;
-            filter: drop-shadow(0 0 20px cyan);
-            animation: float 3s ease-in-out infinite;
+            filter: drop-shadow(0 0 10px rgba(0,0,0,0.6));
+            animation: float 3s infinite ease-in-out;
         }
 
         @keyframes float {
-            0%, 100% { transform: translateY(0); }
+            0% { transform: translateY(0); }
             50% { transform: translateY(-12px); }
+            100% { transform: translateY(0); }
         }
-
-        .title {
-            font-size: 36px;
-            font-weight: 700;
-            margin-top: 20px;
-            text-shadow: 0 0 15px cyan;
-        }
-
-        .subtitle {
-            font-size: 18px;
-            opacity: 0.8;
-            max-width: 400px;
-            margin: 10px auto 30px;
-        }
-
-        .btn {
-            background: cyan;
-            padding: 12px 30px;
-            border-radius: 50px;
-            color: black;
-            font-weight: 600;
-            text-decoration: none;
-            display: inline-block;
-            transition: 0.3s;
-            box-shadow: 0 0 20px cyan;
-        }
-
-        .btn:hover {
-            background: white;
-            box-shadow: 0 0 30px white;
-        }
-
-        .features {
-            margin-top: 70px;
-            padding: 20px;
-            text-align: center;
-        }
-
-        .feature-box {
-            background: rgba(0, 255, 255, 0.05);
-            padding: 20px;
-            border-radius: 15px;
-            margin: 15px auto;
-            max-width: 300px;
-            border: 1px solid rgba(0,255,255,0.3);
-            box-shadow: 0 0 15px rgba(0,255,255,0.3);
-        }
-
-        footer {
-            margin-top: 50px;
-            padding: 20px;
-            text-align: center;
-            border-top: 1px solid rgba(255,255,255,0.2);
-            opacity: 0.6;
-        }
-    </style>
-</head>
-<body>
-
-<header>🤖 BOT JUJU AI</header>
-
-<section class="hero">
-    <img src="robot.png" alt="Robot AI">
-    <div class="title">Asisten AI Futuristik</div>
-    <div class="subtitle">
-        Bot Juju membantu kamu menulis, membuat konten, menganalisis data, dan membangun website pintar.
-    </div>
-    <a class="btn" href="index.html">Mulai Gunakan</a>
-</section>
-
-<section class="features">
-    <h2>🔥 Fitur Unggulan</h2>
-    
-    <div class="feature-box">⚡ Jawaban Cepat & Akurat</div>
-    <div class="feature-box">📄 Generate Artikel & Ide Konten</div>
-    <div class="feature-box">💬 Chatbot Pintar untuk Website</div>
-    <div class="feature-box">🔍 Analisis & Editing</div>
-</section>
-
-<footer>
-    © 2025 Bot Juju — Teknologi AI Masa Depan
-</footer>
-
-</body>
-</html>
-
-
-
-
-
-
