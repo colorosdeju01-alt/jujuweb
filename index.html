@@ -1,80 +1,134 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="id">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>JujuWeb AI — Video Editor (AI features)</title>
-  <style>
-    body{font-family:system-ui,-apple-system,Segoe UI,Roboto,'Helvetica Neue',Arial;margin:0;color:#0b1220;background:#f7fafc}
-    .container{max-width:980px;margin:24px auto;padding:20px}
-    header{display:flex;justify-content:space-between;align-items:center}
-    .btn{background:#4f46e5;color:white;padding:10px 14px;border-radius:8px;text-decoration:none}
-    .hero{display:flex;gap:24px;align-items:center;margin-top:24px}
-    .hero-left{flex:1}
-    h1{margin:0 0 8px;font-size:28px}
-    p.lead{margin:0 0 16px;color:#374151}
-    .hero-right img{max-width:320px;border-radius:12px;box-shadow:0 8px 24px rgba(15,23,42,0.08)}
-    .features{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px;margin-top:24px}
-    .card{background:white;padding:14px;border-radius:10px;box-shadow:0 6px 18px rgba(2,6,23,0.04)}
-    .pricing{display:flex;gap:12px;margin-top:20px}
-    .price{flex:1;padding:16px;border-radius:10px;background:white;box-shadow:0 6px 18px rgba(2,6,23,0.04)}
-    form input, form button{width:100%;padding:10px;margin-top:8px;border-radius:8px;border:1px solid #e5e7eb}
-    footer{margin-top:30px;color:#6b7280;font-size:14px}
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Futuristic Tech Landing Page</title>
+
+    <style>
+        body {
+            margin: 0;
+            font-family: 'Poppins', sans-serif;
+            background: radial-gradient(circle at top, #0a0f24, #000000 80%);
+            color: white;
+            overflow-x: hidden;
+        }
+
+        header {
+            padding: 20px;
+            text-align: center;
+            font-size: 26px;
+            font-weight: 700;
+            color: cyan;
+            letter-spacing: 2px;
+            text-shadow: 0 0 10px cyan;
+        }
+
+        .hero {
+            text-align: center;
+            padding: 60px 20px;
+        }
+
+        .hero img {
+            width: 230px;
+            animation: float 3s infinite ease-in-out;
+            filter: drop-shadow(0 0 20px cyan);
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-12px); }
+        }
+
+        .title {
+            font-size: 38px;
+            font-weight: 700;
+            margin-top: 20px;
+            text-shadow: 0 0 20px cyan;
+        }
+
+        .subtitle {
+            margin-top: 12px;
+            font-size: 18px;
+            opacity: 0.85;
+            max-width: 500px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .btn {
+            background: cyan;
+            color: black;
+            padding: 15px 35px;
+            margin-top: 35px;
+            border-radius: 50px;
+            font-weight: 700;
+            text-decoration: none;
+            box-shadow: 0 0 25px cyan;
+            transition: 0.2s;
+            display: inline-block;
+        }
+
+        .btn:hover {
+            background: white;
+            box-shadow: 0 0 35px white;
+        }
+
+        .features {
+            margin-top: 60px;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .feature-box {
+            background: rgba(0, 255, 255, 0.08);
+            padding: 22px;
+            max-width: 320px;
+            margin: 15px auto;
+            border: 1px solid rgba(0,255,255,0.3);
+            border-radius: 15px;
+            backdrop-filter: blur(5px);
+            box-shadow: 0 0 20px rgba(0,255,255,0.2);
+        }
+
+        footer {
+            margin-top: 80px;
+            text-align: center;
+            padding: 20px;
+            opacity: 0.6;
+            border-top: 1px solid rgba(255,255,255,0.2);
+        }
+    </style>
+
 </head>
 <body>
-  <div class="container">
-    <header>
-      <strong>JujuWeb AI</strong>
-      <nav>
-        <a href="#pricing" class="btn">Coba Gratis</a>
-      </nav>
-    </header>
 
-    <section class="hero">
-      <div class="hero-left">
-        <h1>Editor video AI cepat — buat video profesional dalam menit</h1>
-        <p class="lead">Auto subtitle, auto cut, template siap pakai, dan hasil tanpa watermark untuk pengguna Pro.</p>
-        <a href="#signup" class="btn">Mulai Coba Gratis</a>
-      </div>
-      <div class="hero-right">
-        <img src="https://via.placeholder.com/320x180.png?text=Demo+Before+After" alt="demo"/>
-      </div>
-    </section>
+<header>⚡ FUTURE TECH AI SYSTEM</header>
 
-    <section class="features" aria-label="fitur">
-      <div class="card"><strong>Auto Subtitle</strong><p>Subtitle otomatis dalam banyak bahasa.</p></div>
-      <div class="card"><strong>Template Siap Pakai</strong><p>Template promosi, Instagram, TikTok.</p></div>
-      <div class="card"><strong>Export Cepat</strong><p>Prioritas export untuk user Pro.</p></div>
-      <div class="card"><strong>Integrasi Musik</strong><p>Library musik bebas hak cipta.</p></div>
-    </section>
+<section class="hero">
+    <img src="robot.png" alt="Futuristic Robot">
+    <div class="title">Teknologi Masa Depan, Hari Ini</div>
 
-    <section id="pricing" class="pricing" aria-label="harga">
-      <div class="price">
-        <h3>Free</h3>
-        <p>0 IDR — 3 export / bulan, watermark</p>
-        <button onclick="alert('Daftar Free - form belum terhubung')">Daftar Gratis</button>
-      </div>
-      <div class="price">
-        <h3>Pro</h3>
-        <p>99.000 IDR / bulan — no watermark, 1080p, priority</p>
-        <!-- Ganti href di bawah dengan Stripe Checkout link milikmu -->
-        <a class="btn" href="https://checkout.stripe.com/pay/cs_test_REPLACE_WITH_YOUR_LINK">Berlangganan Pro</a>
-      </div>
-    </section>
+    <div class="subtitle">
+        Sistem AI futuristik yang membantu kamu membuat konten, menganalisis data, 
+        dan membangun teknologi cerdas dengan tampilan modern.
+    </div>
 
-    <section id="signup" style="margin-top:20px">
-      <h3>Dapatkan update & trial gratis</h3>
-      <!-- Ganti action dengan Formspree atau endpoint lain -->
-      <form action="https://formspree.io/f/your-form-id" method="POST">
-        <input type="email" name="email" placeholder="Email kamu" required />
-        <button type="submit" class="btn">Daftar & Dapatkan Trial</button>
-      </form>
-    </section>
+    <a class="btn" href="#">Mulai Sekarang</a>
+</section>
 
-    <footer>
-      <p>© JujuWeb AI — Made with ♥</p>
-    </footer>
-  </div>
+<section class="features">
+    <h2>🔥 Fitur Teknologi</h2>
+
+    <div class="feature-box">🤖 AI Cerdas Real-Time</div>
+    <div class="feature-box">⚡ Kecepatan Ultra Cepat</div>
+    <div class="feature-box">🔐 Keamanan Sistem Tingkat Tinggi</div>
+    <div class="feature-box">🌌 Tampilan Futuristik Premium</div>
+</section>
+
+<footer>
+    © 2025 Future Tech — Powered by AI
+</footer>
+
 </body>
 </html>
