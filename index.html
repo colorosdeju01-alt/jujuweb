@@ -1,0 +1,281 @@
+<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>JujuWeb — Video Editor</title>
+  <meta name="description" content="JujuWeb - Simple in-browser video editor (trim + text overlay) powered by ffmpeg.wasm" />
+
+  <style>
+    :root{
+      --bg:#0f1724;
+      --card:#0b1220;
+      --accent:#4f46e5;
+      --muted:#9aa4b2;
+      --glass: rgba(255,255,255,0.03);
+      font-family: Inter, Roboto, system-ui, -apple-system, "Segoe UI", "Helvetica Neue", Arial;
+      color-scheme: dark;
+    }
+    html,body{height:100%;margin:0;background:linear-gradient(180deg,#071025 0%, #0b1220 100%);color:#e6eef6}
+    .container{max-width:1100px;margin:28px auto;padding:20px;}
+    header{display:flex;align-items:center;gap:16px;margin-bottom:18px}
+    h1{font-size:20px;margin:0}
+    .subtitle{color:var(--muted);font-size:13px}
+    .card{background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01)); border-radius:12px;padding:16px;box-shadow:0 6px 18px rgba(2,6,23,0.6);margin-bottom:14px}
+    .flex{display:flex;gap:12px}
+    .panel{flex:1;min-width:260px}
+    .upload-area{border:2px dashed rgba(255,255,255,0.06);padding:18px;border-radius:10px;text-align:center;cursor:pointer}
+    .btn{display:inline-block;padding:8px 12px;border-radius:8px;background:var(--accent);color:white;text-decoration:none;cursor:pointer;font-weight:600}
+    input[type=range]{width:100%}
+    video{max-width:100%;border-radius:8px;background:black}
+    label{font-size:13px;color:var(--muted);display:block;margin-bottom:6px}
+    .row{display:flex;gap:10px;align-items:center}
+    .small{font-size:13px;color:var(--muted)}
+    .control{background:var(--glass);padding:10px;border-radius:8px}
+    .progress{height:10px;background:rgba(255,255,255,0.06);border-radius:999px;overflow:hidden}
+    .progress > i{display:block;height:100%;width:0%;background:linear-gradient(90deg,#60a5fa,#4f46e5)}
+    textarea{width:100%;min-height:46px;border-radius:8px;padding:8px;border:none;background:rgba(255,255,255,0.02);color:inherit}
+    .muted{color:var(--muted);font-size:12px}
+    .footer{margin-top:16px;color:var(--muted);font-size:13px}
+    @media (max-width:800px){
+      .flex{flex-direction:column}
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <img src="https://raw.githubusercontent.com/favicon.ico" alt="" style="width:40px;height:40px;border-radius:8px;opacity:.9">
+      <div>
+        <h1>JujuWeb — Video Editor</h1>
+        <div class="subtitle">Trim & add text overlay — langsung di browser (no server)</div>
+      </div>
+    </header>
+
+    <div class="card">
+      <div class="flex">
+        <div class="panel">
+          <div id="upload" class="upload-area">
+            <div style="font-weight:700;margin-bottom:6px">Tarik & lepas video di sini</div>
+            <div class="small">Mendukung MP4, WebM. Ukuran file besar akan memakan banyak memori & CPU.</div>
+            <input id="fileInput" type="file" accept="video/*" style="display:none">
+          </div>
+
+          <div style="margin-top:12px" id="videoWrapper" hidden>
+            <label class="small">Pratinjau</label>
+            <video id="video" controls></video>
+            <div style="display:flex;gap:8px;margin-top:8px">
+              <div class="control" style="flex:1">
+                <label class="small">Start (detik)</label>
+                <input id="startSec" type="number" min="0" step="0.1" value="0" style="width:100%">
+              </div>
+              <div class="control" style="width:140px">
+                <label class="small">End (detik)</label>
+                <input id="endSec" type="number" min="0" step="0.1" value="5" style="width:100%">
+              </div>
+            </div>
+
+            <div style="display:flex;gap:8px;margin-top:8px;align-items:center">
+              <div style="flex:1">
+                <label class="small">Teks overlay</label>
+                <input id="overlayText" placeholder="Masukkan teks..." style="width:100%;padding:8px;border-radius:6px;background:rgba(255,255,255,0.02);border:none;color:inherit">
+              </div>
+              <div style="width:160px">
+                <label class="small">Posisi</label>
+                <select id="overlayPos" style="width:100%;padding:8px;border-radius:6px;background:rgba(255,255,255,0.02);border:none;color:inherit">
+                  <option value="10:10">Kiri Atas</option>
+                  <option value="10:main_h-40">Kiri Bawah</option>
+                  <option value="main_w-10:10">Kanan Atas</option>
+                  <option value="main_w-10:main_h-40">Kanan Bawah</option>
+                  <option value="(main_w/2-text_w/2):(main_h-text_h-20)">Tengah Bawah</option>
+                </select>
+              </div>
+            </div>
+
+            <div style="margin-top:10px;display:flex;gap:8px;align-items:center">
+              <button id="btnExport" class="btn">Export Video</button>
+              <div style="flex:1">
+                <div class="progress" aria-hidden="true"><i id="progressBar"></i></div>
+                <div class="muted" style="margin-top:6px" id="status">Belum mulai</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="panel">
+          <div class="card" style="padding:12px">
+            <label class="small">Log & Tips</label>
+            <div id="log" style="height:320px;overflow:auto;padding:8px;border-radius:8px;background:rgba(0,0,0,0.18);font-family:monospace;font-size:13px;color:#dbeafe"></div>
+            <div class="footer">
+              - Jika loading lama: ffmpeg.wasm sedang inisialisasi (satu kali).<br>
+              - Di device lambat: pertimbangkan gunakan server backend dengan ffmpeg asli.<br>
+              - Untuk menambahkan musik, transisi, atau filter, kita perlu menambahkan UI & perintah ffmpeg tambahan.
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <footer style="text-align:center;color:var(--muted);font-size:13px">
+      Dibuat untuk Juju — Simple in-browser video editor. Simpan file hasil export ke local disk.
+    </footer>
+  </div>
+
+  <!-- ffmpeg.wasm via CDN (module) -->
+  <script type="module">
+    import { createFFmpeg, fetchFile } from "https://cdn.jsdelivr.net/npm/@ffmpeg/ffmpeg@0.11.7/dist/ffmpeg.min.js";
+
+    const upload = document.getElementById('upload');
+    const fileInput = document.getElementById('fileInput');
+    const video = document.getElementById('video');
+    const videoWrapper = document.getElementById('videoWrapper');
+    const startSec = document.getElementById('startSec');
+    const endSec = document.getElementById('endSec');
+    const overlayText = document.getElementById('overlayText');
+    const overlayPos = document.getElementById('overlayPos');
+    const btnExport = document.getElementById('btnExport');
+    const logEl = document.getElementById('log');
+    const status = document.getElementById('status');
+    const progressBar = document.getElementById('progressBar');
+
+    let currentFile = null;
+    let ffmpeg = null;
+    let loadingFFmpeg = false;
+
+    function log(msg){
+      const time = new Date().toLocaleTimeString();
+      logEl.innerHTML += "["+time+"] " + msg + "<br>";
+      logEl.scrollTop = logEl.scrollHeight;
+    }
+
+    upload.addEventListener('click', ()=> fileInput.click());
+    upload.addEventListener('dragover', (e)=>{ e.preventDefault(); upload.style.borderColor = 'rgba(255,255,255,0.18)'; });
+    upload.addEventListener('dragleave', ()=>{ upload.style.borderColor = ''; });
+    upload.addEventListener('drop', (e)=>{ e.preventDefault(); upload.style.borderColor = ''; const f = e.dataTransfer.files[0]; if(f) handleFile(f); });
+
+    fileInput.addEventListener('change', (e)=> { const f = e.target.files[0]; if(f) handleFile(f); });
+
+    function handleFile(file){
+      if(!file.type.startsWith('video')){
+        alert('Silakan pilih file video.');
+        return;
+      }
+      currentFile = file;
+      const url = URL.createObjectURL(file);
+      video.src = url;
+      videoWrapper.hidden = false;
+      video.addEventListener('loadedmetadata', ()=>{
+        const dur = video.duration || 0;
+        startSec.value = 0;
+        endSec.value = Math.min( Math.max(5, Math.round(dur*100)/100 ), Math.round(dur*100)/100 );
+        log('Video dimuat — durasi: ' + dur.toFixed(2) + ' detik');
+      }, { once: true });
+    }
+
+    async function ensureFFmpeg(){
+      if(ffmpeg) return ffmpeg;
+      if(loadingFFmpeg) return new Promise(resolve => {
+        const check = setInterval(()=>{ if(ffmpeg){ clearInterval(check); resolve(ffmpeg); } },200);
+      });
+      loadingFFmpeg = true;
+      status.textContent = 'Memuat ffmpeg.wasm — ini bisa memakan waktu (download ~5-20MB)';
+      log('Inisialisasi ffmpeg.wasm ...');
+      ffmpeg = createFFmpeg({ log: true, corePath: 'https://cdn.jsdelivr.net/npm/@ffmpeg/core@0.11.1/dist/ffmpeg-core.js' });
+      ffmpeg.setLogger(({ type, message })=>{
+        // tampilkan beberapa pesan penting
+        if(type === 'info' || type === 'warn' || type === 'error') log('[ffmpeg] ' + message);
+      });
+      ffmpeg.setProgress(({ ratio })=>{
+        progressBar.style.width = Math.round(ratio*100) + '%';
+        status.textContent = 'Proses ffmpeg: ' + Math.round(ratio*100) + '%';
+      });
+      await ffmpeg.load();
+      log('ffmpeg siap.');
+      status.textContent = 'ffmpeg siap';
+      loadingFFmpeg = false;
+      return ffmpeg;
+    }
+
+    btnExport.addEventListener('click', async ()=>{
+      if(!currentFile){ alert('Upload video terlebih dahulu.'); return; }
+      // parse times
+      const s = parseFloat(startSec.value) || 0;
+      const e = parseFloat(endSec.value) || Math.max(s + 1, 5);
+      const duration = Math.max(0.1, e - s);
+
+      // guard
+      if(e <= s){ alert('Waktu end harus lebih besar dari start.'); return; }
+      if(duration > 300){ if(!confirm('Durasi > 5 menit, proses mungkin sangat lama di browser. Lanjutkan?')) return; }
+
+      btnExport.disabled = true;
+      status.textContent = 'Menyiapkan...';
+      progressBar.style.width = '5%';
+      try{
+        await ensureFFmpeg();
+        log('Menulis file input ke filesystem virtual ffmpeg...');
+        const name = 'input.mp4';
+        const data = await fetchFile(currentFile);
+        await ffmpeg.FS('writeFile', name, data);
+
+        // buat filter untuk teks overlay jika diisi
+        const text = (overlayText.value||'').trim();
+        let filter = '';
+        let drawtextArgs = '';
+        if(text){
+          // gunakan drawtext; pakai fontfile default — beberapa browser mungkin tidak mendukung fontfile di ffmpeg.wasm.
+          // kita escape karakter ':' dan '\' serta quotes
+          const esc = text.replace(/[:\\']/g, function(m){ return '\\' + m; }).replace(/\n/g, '\\n');
+          const pos = overlayPos.value || '10:10';
+          drawtextArgs = `drawtext=fontfile=/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf:text='${esc}':${'x=' + pos.split(':')[0] + ':y=' + pos.split(':')[1]}:fontsize=28:fontcolor=white:box=1:boxcolor=0x00000088`;
+          // Note: fallback: if fontfile not found, ffmpeg may error; we'll try without fontfile fallback.
+          filter = `-vf "${drawtextArgs}"`;
+        }
+
+        status.textContent = 'Memproses (meng-encode)...';
+        log(`Menjalankan ffmpeg: trim ${s}s -> ${e}s ${ text ? ' + drawtext' : '' }`);
+        // construct command:
+        // -ss start -i input.mp4 -t duration [filters] -c:v libx264 -c:a aac output.mp4
+        // In ffmpeg.wasm use array args.
+        const outName = 'output.mp4';
+        const args = [
+          '-ss', String(s),
+          '-i', name,
+          '-t', String(duration),
+        ];
+
+        if(text){
+          // apply drawtext as filter_complex or -vf; because of quoting complexities, use filtergraph without outer quotes:
+          args.push('-vf', drawtextArgs);
+        }
+
+        // encoding settings: reasonable defaults
+        args.push('-c:v','libx264','-preset','veryfast','-crf','23','-c:a','aac','-b:a','128k', outName);
+
+        log('Argumen ffmpeg: ' + args.join(' '));
+        await ffmpeg.run(...args);
+
+        log('Membaca file hasil...');
+        const dataOut = ffmpeg.FS('readFile', outName);
+        // buat blob dan link download
+        const blob = new Blob([dataOut.buffer], { type: 'video/mp4' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'juju-output.mp4';
+        a.click();
+        status.textContent = 'Selesai — file terdownload';
+        progressBar.style.width = '100%';
+        log('Export selesai — file terdownload sebagai juju-output.mp4');
+      }catch(err){
+        console.error(err);
+        log('ERROR: ' + (err && err.message ? err.message : String(err)));
+        status.textContent = 'Terjadi error — lihat log';
+        alert('Terjadi error saat memproses. Cek log untuk detail (dan pastikan ffmpeg sudah dimuat).');
+      }finally{
+        btnExport.disabled = false;
+      }
+    });
+
+  </script>
+</body>
+</html>
