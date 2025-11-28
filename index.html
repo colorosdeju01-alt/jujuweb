@@ -2,429 +2,79 @@
 <html lang="id">
 <head>
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>JujuWeb AI — Video Editor (AI features)</title>
   <style>
-    :root{
-      --bg:#071121; --card:#0f1724; --accent:#4f46e5; --muted:#9aa4b2;
-      font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, Arial;
-    }
-    body { margin:0; background:linear-gradient(180deg,#071121,#061025); color:#e9f2ff; }
-    .wrap{ max-width:1100px; margin:20px auto; padding:18px;}
-    h1{ margin:0 0 6px 0; font-size:20px; }
-    .subtitle{ color:var(--muted); font-size:13px; margin-bottom:14px; }
-
-    /* basic cards */
-    .card{ background:rgba(255,255,255,0.02); padding:14px; border-radius:12px; box-shadow:0 8px 30px rgba(0,0,0,0.5); }
-
-    /* layout */
-    .cols{ display:flex; gap:16px; }
-    @media(max-width:900px){ .cols{ flex-direction:column; } }
-
-    /* upload area (safari friendly) */
-    .upload-area{ border:2px dashed rgba(255,255,255,0.06); border-radius:12px; padding:22px; text-align:center; position:relative; cursor:pointer; user-select:none; }
-    .upload-area input[type=file]{ position:absolute; inset:0; width:100%; height:100%; opacity:0; cursor:pointer; z-index:9999; }
-
-    video{ width:100%; border-radius:8px; background:black; margin-top:12px; }
-
-    label{ display:block; margin-top:10px; color:var(--muted); font-weight:600; font-size:13px; }
-    input[type=number], input[type=text], select, textarea { width:100%; padding:10px; margin-top:6px; border-radius:8px; border:none; background:rgba(255,255,255,0.03); color:inherit; }
-    textarea{ min-height:80px; resize:vertical; }
-
-    .btn { display:inline-block; padding:10px 14px; border-radius:8px; background:var(--accent); color:white; border:none; font-weight:700; cursor:pointer; }
-    .btn.ghost{ background:transparent; border:1px solid rgba(255,255,255,0.06); }
-
-    .progress{ height:10px; background:rgba(255,255,255,0.06); border-radius:999px; overflow:hidden; margin-top:8px; }
-    .progress > i{ display:block; height:100%; width:0%; background:linear-gradient(90deg,#60a5fa,#4f46e5); }
-
-    #log{ height:320px; overflow:auto; padding:8px; border-radius:8px; background:rgba(0,0,0,0.2); font-family:monospace; font-size:13px; color:#dbeafe; }
-
-    .muted{ color:var(--muted); font-size:13px; }
-    *{ -webkit-tap-highlight-color: transparent; }
-    button,input,select,.upload-area{ touch-action: manipulation; }
+    body{font-family:system-ui,-apple-system,Segoe UI,Roboto,'Helvetica Neue',Arial;margin:0;color:#0b1220;background:#f7fafc}
+    .container{max-width:980px;margin:24px auto;padding:20px}
+    header{display:flex;justify-content:space-between;align-items:center}
+    .btn{background:#4f46e5;color:white;padding:10px 14px;border-radius:8px;text-decoration:none}
+    .hero{display:flex;gap:24px;align-items:center;margin-top:24px}
+    .hero-left{flex:1}
+    h1{margin:0 0 8px;font-size:28px}
+    p.lead{margin:0 0 16px;color:#374151}
+    .hero-right img{max-width:320px;border-radius:12px;box-shadow:0 8px 24px rgba(15,23,42,0.08)}
+    .features{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px;margin-top:24px}
+    .card{background:white;padding:14px;border-radius:10px;box-shadow:0 6px 18px rgba(2,6,23,0.04)}
+    .pricing{display:flex;gap:12px;margin-top:20px}
+    .price{flex:1;padding:16px;border-radius:10px;background:white;box-shadow:0 6px 18px rgba(2,6,23,0.04)}
+    form input, form button{width:100%;padding:10px;margin-top:8px;border-radius:8px;border:1px solid #e5e7eb}
+    footer{margin-top:30px;color:#6b7280;font-size:14px}
   </style>
 </head>
 <body>
-  <div class="wrap">
-    <h1>JujuWeb AI — Video Editor</h1>
-    <div class="subtitle">Trim • Text overlay • Auto-subtitle (AI) • Auto-suggest captions — runs in browser + optional AI endpoints</div>
+  <div class="container">
+    <header>
+      <strong>JujuWeb AI</strong>
+      <nav>
+        <a href="#pricing" class="btn">Coba Gratis</a>
+      </nav>
+    </header>
 
-    <div class="card">
-      <div class="cols">
-        <!-- LEFT: Controls -->
-        <div style="flex:1; min-width:320px;">
-          <div class="upload-area" id="uploadArea">
-            <div style="font-weight:700; font-size:16px;">Tarik & lepas videomu di sini</div>
-            <div class="muted" style="margin-top:6px;">Atau ketuk untuk pilih file (mp4 / webm). Untuk AI-transcribe, file akan dikirim ke server yang kamu konfigurasi.</div>
-            <input id="fileInput" type="file" accept="video/*">
-          </div>
-
-          <div id="editor" style="display:none; margin-top:12px;">
-            <video id="video" controls></video>
-
-            <label>Trim: Start (detik)</label>
-            <input id="startSec" type="number" value="0" step="0.1">
-
-            <label>Trim: End (detik)</label>
-            <input id="endSec" type="number" value="5" step="0.1">
-
-            <label>Teks Overlay (manual)</label>
-            <input id="overlayText" type="text" placeholder="Masukkan teks overlay">
-
-            <label>Posisi Teks</label>
-            <select id="overlayPos">
-              <option value="10:10">Kiri Atas</option>
-              <option value="(main_w/2-text_w/2):10">Tengah Atas</option>
-              <option value="(main_w/2-text_w/2):(main_h-text_h-40)">Tengah Bawah</option>
-              <option value="10:main_h-40">Kiri Bawah</option>
-              <option value="main_w-10:main_h-40">Kanan Bawah</option>
-            </select>
-
-            <div style="display:flex; gap:8px; margin-top:10px;">
-              <button id="btnSuggest" class="btn ghost">AI Suggest Caption</button>
-              <button id="btnTranscribe" class="btn ghost">Auto-Subtitle (AI)</button>
-              <button id="btnExport" class="btn">Export & Download</button>
-            </div>
-
-            <div class="progress"><i id="progressBar"></i></div>
-            <div id="status" class="muted" style="margin-top:6px;">Status: idle</div>
-
-            <label style="margin-top:12px;">Subtitle (preview)</label>
-            <textarea id="subtitlePreview" placeholder="Subtitle akan muncul di sini setelah transcribe..."></textarea>
-          </div>
-        </div>
-
-        <!-- RIGHT: Log & Tips -->
-        <div style="flex:1; min-width:300px;">
-          <div style="display:flex;gap:8px;align-items:center;justify-content:space-between;">
-            <div style="font-weight:700;">Log & Tips</div>
-            <div class="muted" style="font-size:13px;">ffmpeg.wasm + optional AI server</div>
-          </div>
-          <div id="log" style="margin-top:8px;"></div>
-        </div>
+    <section class="hero">
+      <div class="hero-left">
+        <h1>Editor video AI cepat — buat video profesional dalam menit</h1>
+        <p class="lead">Auto subtitle, auto cut, template siap pakai, dan hasil tanpa watermark untuk pengguna Pro.</p>
+        <a href="#signup" class="btn">Mulai Coba Gratis</a>
       </div>
-    </div>
+      <div class="hero-right">
+        <img src="https://via.placeholder.com/320x180.png?text=Demo+Before+After" alt="demo"/>
+      </div>
+    </section>
 
-    <!-- Notes -->
-    <div style="margin-top:12px;color:var(--muted);font-size:13px;">
-      <strong>Catatan:</strong> AI endpoints (<code>/api/transcribe</code>, <code>/api/suggest</code>) harus kamu sediakan sendiri. Lihat komentar di bawah untuk contoh server minimal (Node.js).
-    </div>
+    <section class="features" aria-label="fitur">
+      <div class="card"><strong>Auto Subtitle</strong><p>Subtitle otomatis dalam banyak bahasa.</p></div>
+      <div class="card"><strong>Template Siap Pakai</strong><p>Template promosi, Instagram, TikTok.</p></div>
+      <div class="card"><strong>Export Cepat</strong><p>Prioritas export untuk user Pro.</p></div>
+      <div class="card"><strong>Integrasi Musik</strong><p>Library musik bebas hak cipta.</p></div>
+    </section>
+
+    <section id="pricing" class="pricing" aria-label="harga">
+      <div class="price">
+        <h3>Free</h3>
+        <p>0 IDR — 3 export / bulan, watermark</p>
+        <button onclick="alert('Daftar Free - form belum terhubung')">Daftar Gratis</button>
+      </div>
+      <div class="price">
+        <h3>Pro</h3>
+        <p>99.000 IDR / bulan — no watermark, 1080p, priority</p>
+        <!-- Ganti href di bawah dengan Stripe Checkout link milikmu -->
+        <a class="btn" href="https://checkout.stripe.com/pay/cs_test_REPLACE_WITH_YOUR_LINK">Berlangganan Pro</a>
+      </div>
+    </section>
+
+    <section id="signup" style="margin-top:20px">
+      <h3>Dapatkan update & trial gratis</h3>
+      <!-- Ganti action dengan Formspree atau endpoint lain -->
+      <form action="https://formspree.io/f/your-form-id" method="POST">
+        <input type="email" name="email" placeholder="Email kamu" required />
+        <button type="submit" class="btn">Daftar & Dapatkan Trial</button>
+      </form>
+    </section>
+
+    <footer>
+      <p>© JujuWeb AI — Made with ♥</p>
+    </footer>
   </div>
-
-  <!-- ffmpeg.wasm -->
-  <script type="module">
-    import { createFFmpeg, fetchFile } from "https://cdn.jsdelivr.net/npm/@ffmpeg/ffmpeg@0.11.7/dist/ffmpeg.min.js";
-
-    // Elements
-    const fileInput = document.getElementById('fileInput');
-    const uploadArea = document.getElementById('uploadArea');
-    const editor = document.getElementById('editor');
-    const video = document.getElementById('video');
-    const startSec = document.getElementById('startSec');
-    const endSec = document.getElementById('endSec');
-    const overlayText = document.getElementById('overlayText');
-    const overlayPos = document.getElementById('overlayPos');
-    const btnExport = document.getElementById('btnExport');
-    const btnTranscribe = document.getElementById('btnTranscribe');
-    const btnSuggest = document.getElementById('btnSuggest');
-    const progressBar = document.getElementById('progressBar');
-    const status = document.getElementById('status');
-    const logEl = document.getElementById('log');
-    const subtitlePreview = document.getElementById('subtitlePreview');
-
-    let currentFile = null;
-    let ffmpeg = null;
-    let loadingFFmpeg = false;
-
-    function log(msg) {
-      const t = new Date().toLocaleTimeString();
-      logEl.innerHTML += `[${t}] ${msg}<br>`;
-      logEl.scrollTop = logEl.scrollHeight;
-      console.log(msg);
-    }
-
-    // Drag drop UX
-    uploadArea.addEventListener('dragover', e=>{ e.preventDefault(); uploadArea.style.borderColor='rgba(255,255,255,0.3)'; });
-    uploadArea.addEventListener('dragleave', e=>{ uploadArea.style.borderColor=''; });
-    uploadArea.addEventListener('drop', e=>{ e.preventDefault(); uploadArea.style.borderColor=''; const f = e.dataTransfer.files && e.dataTransfer.files[0]; if(f) handleFile(f); });
-
-    fileInput.addEventListener('change', (e)=> { const f = e.target.files[0]; if(f) handleFile(f); });
-
-    function handleFile(file) {
-      if(!file.type.startsWith('video')) { alert('Silakan pilih file video.'); return; }
-      currentFile = file;
-      video.src = URL.createObjectURL(file);
-      video.load();
-      editor.style.display = 'block';
-      log(`File dipilih: ${file.name} (${Math.round(file.size/1024/1024*100)/100} MB)`);
-      // set default end time once metadata loaded:
-      video.addEventListener('loadedmetadata', ()=> {
-        endSec.value = Math.round(Math.max(1, video.duration) * 10)/10;
-        log(`Durasi video: ${video.duration.toFixed(2)} detik`);
-      }, { once:true });
-    }
-
-    async function ensureFFmpeg() {
-      if(ffmpeg) return ffmpeg;
-      if(loadingFFmpeg) return new Promise(resolve=>{
-        const chk = setInterval(()=>{ if(ffmpeg){ clearInterval(chk); resolve(ffmpeg); } }, 200);
-      });
-      loadingFFmpeg = true;
-      status.textContent = 'Memuat ffmpeg.wasm... (sekali)';
-      log('Inisialisasi ffmpeg.wasm (download core ~several MB)...');
-      ffmpeg = createFFmpeg({ log:true, corePath: 'https://cdn.jsdelivr.net/npm/@ffmpeg/core@0.11.1/dist/ffmpeg-core.js' });
-      ffmpeg.setLogger(({ type, message }) => {
-        if(type==='info' || type==='warn' || type==='error') log(`[ffmpeg] ${message}`);
-      });
-      ffmpeg.setProgress(({ ratio }) => {
-        progressBar.style.width = Math.round(ratio*100) + '%';
-        status.textContent = 'Proses: ' + Math.round(ratio*100) + '%';
-      });
-      await ffmpeg.load();
-      log('ffmpeg siap.');
-      status.textContent = 'ffmpeg siap';
-      loadingFFmpeg = false;
-      return ffmpeg;
-    }
-
-    // Helper: escape for ffmpeg drawtext
-    function ffEscape(s){
-      if(!s) return '';
-      return s.replace(/'/g, "\\'").replace(/:/g, '\\:').replace(/,/g, '\\,').replace(/\n/g,'\\n');
-    }
-
-    // Build drawtext filter for subtitles array
-    // subs = [{ start: 0.5, end: 2.3, text: "Hello" }, ...]
-    function buildSubtitleFilter(subs, x='(main_w/2-text_w/2)', y='(main_h-text_h-40)'){
-      if(!Array.isArray(subs) || subs.length===0) return '';
-      const filters = subs.map((s, idx)=>{
-        const txt = ffEscape(s.text);
-        // enable between t
-        const enable = `between(t\\,${s.start}\\,${s.end})`;
-        return `drawtext=text='${txt}':enable='${enable}':x=${x}:y=${y}:fontsize=28:fontcolor=white:box=1:boxcolor=0x00000099`;
-      });
-      return filters.join(',');
-    }
-
-    // Auto-transcribe — calls user-provided API: POST /api/transcribe
-    // The server should accept a multipart/form-data with file param "video"
-    // and return JSON: { subtitles: [{start:0.0,end:1.2,text:"..."} , ... ] }
-    async function aiTranscribe() {
-      if(!currentFile) return alert('Upload video terlebih dahulu!');
-      status.textContent = 'Mengirim ke server AI (transcribe)...';
-      log('Kirim file ke /api/transcribe (server diperlukan)');
-      try {
-        const form = new FormData();
-        form.append('video', currentFile);
-        // replace endpoint if needed
-        const resp = await fetch('/api/transcribe', { method:'POST', body: form });
-        if(!resp.ok) throw new Error('Transcribe API error: ' + resp.status);
-        const j = await resp.json();
-        if(!Array.isArray(j.subtitles)) throw new Error('Response invalid: expected {subtitles: [...] }');
-        subtitlePreview.value = j.subtitles.map(s=>`${s.start.toFixed(2)} --> ${s.end.toFixed(2)}\n${s.text}\n`).join('\n');
-        log(`Transcribe selesai — ${j.subtitles.length} subtitle`);
-        status.textContent = 'Transcribe selesai';
-        return j.subtitles;
-      } catch(err){
-        log('Transcribe error: ' + (err.message||err));
-        status.textContent = 'Transcribe error';
-        alert('Transcribe gagal — periksa console/log. Pastikan server tersedia pada /api/transcribe.');
-        throw err;
-      }
-    }
-
-    // AI suggest caption based on small prompt or selected segment
-    // Calls POST /api/suggest { text: '...' } => { suggestion: 'short caption' }
-    async function aiSuggest(promptText){
-      try {
-        status.textContent = 'Meminta saran caption dari server AI...';
-        const resp = await fetch('/api/suggest', {
-          method:'POST',
-          headers:{ 'Content-Type':'application/json' },
-          body: JSON.stringify({ text: promptText })
-        });
-        if(!resp.ok) throw new Error('Suggest API error: ' + resp.status);
-        const j = await resp.json();
-        if(j.suggestion) {
-          log('AI suggestion: ' + j.suggestion);
-          status.textContent = 'Saran AI siap';
-          return j.suggestion;
-        } else throw new Error('Response missing suggestion');
-      } catch(err){
-        log('Suggest error: ' + (err.message||err));
-        status.textContent = 'Suggest error';
-        alert('Suggest gagal — pastikan server /api/suggest tersedia.');
-        throw err;
-      }
-    }
-
-    // Build drawtext filter: combine manual overlay plus subtitle filters
-    function buildDrawtextFilter(subs, manualText){
-      const parts = [];
-      if(manualText && manualText.trim()){
-        parts.push(`drawtext=text='${ffEscape(manualText)}':x=${overlayPos.value.split(':')[0]}:y=${overlayPos.value.split(':')[1]}:fontsize=36:fontcolor=white:box=1:boxcolor=0x00000099`);
-      }
-      if(subs && subs.length) parts.push(buildSubtitleFilter(subs));
-      return parts.length ? parts.join(',') : '';
-    }
-
-    // Export: will trim + apply drawtext filters if any
-    async function exportVideo(subtitlesArray = []) {
-      if(!currentFile) return alert('Upload video terlebih dahulu!');
-      const s = parseFloat(startSec.value) || 0;
-      const e = parseFloat(endSec.value) || (video.duration || 5);
-      if(e <= s) return alert('End harus lebih besar dari Start');
-      const dur = Math.max(0.1, e - s);
-
-      try {
-        await ensureFFmpeg();
-      } catch(err){
-        alert('Gagal load ffmpeg: ' + (err.message||err));
-        return;
-      }
-
-      status.textContent = 'Menulis input ke ffmpeg FS...';
-      log('Menulis input file ke memfs');
-      const inName = 'input.mp4';
-      const outName = 'output.mp4';
-      try {
-        const data = await fetchFile(currentFile);
-        ffmpeg.FS('writeFile', inName, data);
-      } catch(err){
-        log('Fail writeFile: ' + err.message);
-        alert('Gagal menulis file ke ffmpeg FS: ' + err.message);
-        return;
-      }
-
-      // build args
-      const args = ['-ss', String(s), '-i', 'input.mp4', '-t', String(dur)];
-      // drawtext filter
-      const manual = overlayText.value || '';
-      const filter = buildDrawtextFilter(subtitlesArray, manual);
-      if(filter){
-        args.push('-vf', filter);
-      }
-      // encoding defaults
-      args.push('-c:v','libx264','-preset','veryfast','-crf','23','-c:a','aac','-b:a','128k', outName);
-
-      log('Menjalankan ffmpeg: ' + args.join(' '));
-      status.textContent = 'Memproses (ffmpeg)...';
-      try {
-        await ffmpeg.run(...args);
-        log('Proses ffmpeg selesai, membaca hasil...');
-        const dataOut = ffmpeg.FS('readFile', outName);
-        const blob = new Blob([dataOut.buffer], { type: 'video/mp4' });
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = 'juju-ai-output.mp4';
-        a.click();
-        status.textContent = 'Selesai — file terdownload';
-        log('Export selesai — file didownload: juju-ai-output.mp4');
-      } catch(err){
-        log('ffmpeg error: ' + (err.message||err));
-        status.textContent = 'ffmpeg error';
-        alert('Export gagal: ' + (err.message||err));
-      }
-    }
-
-    // Button handlers
-    btnExport.addEventListener('click', async ()=>{
-      status.textContent = 'Menyiapkan export...';
-      // If subtitlePreview contains SRT-like text, try parse into objects
-      let subs = [];
-      try {
-        subs = parseSubtitlePreview(subtitlePreview.value);
-      } catch(e){ subs = []; }
-      await exportVideo(subs);
-    });
-
-    btnTranscribe.addEventListener('click', async ()=>{
-      if(!currentFile) return alert('Upload video terlebih dahulu!');
-      try {
-        const subs = await aiTranscribe(); // will set subtitlePreview
-        // optional: auto-trigger export after transcribe? Not automatic — user decides
-      } catch(e){
-        // already handled in aiTranscribe
-      }
-    });
-
-    btnSuggest.addEventListener('click', async ()=>{
-      // suggestion based on either current subtitlePreview or video filename
-      const prompt = subtitlePreview.value.trim() || (currentFile && currentFile.name) || '';
-      if(!prompt) return alert('Upload video atau hasil transcribe agar AI bisa memberi saran.');
-      try {
-        const sug = await aiSuggest(prompt);
-        // place into overlayText input
-        overlayText.value = sug;
-        log('Saran AI dimasukkan ke overlayText.');
-      } catch(e){}
-    });
-
-    // Parse simple subtitle preview format into array [{start,end,text},...]
-    // Expects blocks: "0.00 --> 1.23\nHello\n\n1.24 --> 2.50\nWorld"
-    function parseSubtitlePreview(txt) {
-      const lines = txt.split(/\r?\n/).map(l=>l.trim());
-      const res = [];
-      let i=0;
-      while(i < lines.length){
-        const l = lines[i];
-        const m = l.match(/^(\d+(\.\d+)?)\s*-->\s*(\d+(\.\d+)?)/);
-        if(m){
-          const start = parseFloat(m[1]);
-          const end = parseFloat(m[3]);
-          i++;
-          // collect following non-empty lines as text
-          let text = '';
-          while(i < lines.length && lines[i] !== ''){
-            text += (text ? '\n' : '') + lines[i];
-            i++;
-          }
-          res.push({ start, end, text });
-        } else {
-          i++;
-        }
-        // skip blank
-        while(i < lines.length && lines[i]==='') i++;
-      }
-      return res;
-    }
-
-    // Expose ffmpeg variable for debug (optional)
-    window.__juju_ffmpeg = { ensureFFmpeg, ffmpegRef: ()=>ffmpeg };
-
-    // optional: warn user about large files
-    window.addEventListener('beforeunload', (e)=>{ /* can show warning if processing */ });
-
-  </script>
-
-  <!-- Server examples & notes (not executed) -->
-  <!--
-    SERVER (example): Node.js minimal endpoints you can implement:
-
-    1) POST /api/transcribe
-       - Accept multipart/form-data with "video" file.
-       - Run Whisper / AssemblyAI / OpenAI Whisper API / any STT engine.
-       - Return JSON: { subtitles: [{ start: 0.0, end: 1.2, text: "Hello" }, ...] }
-
-    2) POST /api/suggest
-       - Accept JSON { text: "..." }
-       - Call a text-generation API (e.g. OpenAI completion) to produce a short caption.
-       - Return JSON { suggestion: "Short catchy caption" }
-
-    Example minimal Node (pseudocode):
-      const express = require('express');
-      const multer = require('multer');
-      const upload = multer({ dest:'/tmp' });
-      app.post('/api/transcribe', upload.single('video'), async (req,res)=>{
-         // send req.file.path to your transcribe service
-         // parse result into subtitle array and return
-      });
-
-    Security:
-      - Protect endpoints with API key or CORS rules.
-      - For public GitHub Pages, host the server separately (Heroku, Vercel, Render, DigitalOcean).
-  -->
-
 </body>
 </html>
