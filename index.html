@@ -2,15 +2,16 @@
 <html lang="id">
 <head>
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no" />
+  <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1" />
   <title>JujuWeb — Video Editor</title>
 
   <style>
     :root{
       --bg:#0f1724;
+      --card:#131c2e;
       --accent:#4f46e5;
       --muted:#9aa4b2;
-      font-family: Inter, system-ui, -apple-system;
+      font-family: Inter, -apple-system, system-ui;
       color-scheme: dark;
     }
     body{
@@ -19,286 +20,284 @@
       color:#e6eef6;
     }
     .container{
-      max-width:1100px;
-      margin:20px auto;
+      max-width:1000px;
+      margin:auto;
       padding:18px;
     }
-    h1{
-      margin:0;
-      font-size:20px;
-      font-weight:700;
-    }
-    .subtitle{
-      font-size:13px;
-      color:var(--muted);
-      margin-top:4px;
-    }
-
-    /* --- SAFARI FIX --- */
-    * { -webkit-tap-highlight-color: transparent; }
-    button, input, select, .upload-area { touch-action: manipulation; }
+    h1{margin:0;font-size:22px;}
+    .subtitle{color:var(--muted);font-size:13px;margin-top:4px;}
 
     .card{
-      background:rgba(255,255,255,0.03);
-      padding:16px;
-      border-radius:12px;
-      margin-bottom:20px;
-      box-shadow:0 6px 18px rgba(2,6,23,0.5);
+      background:var(--card);
+      border-radius:14px;
+      padding:18px;
+      margin-top:18px;
+      box-shadow:0 6px 18px rgba(0,0,0,0.5);
     }
+
+    /* SAFARI FIX */
+    *{ -webkit-tap-highlight-color:transparent; }
+    input, button, .upload-area{ touch-action: manipulation; }
 
     .flex{
       display:flex;
-      gap:14px;
+      gap:16px;
     }
     @media(max-width:850px){
       .flex{flex-direction:column;}
     }
 
-    /* Upload area FIX SAFARI */
+    /* Upload Area */
     .upload-area{
-      border:2px dashed rgba(255,255,255,0.18);
+      border:2px dashed rgba(255,255,255,0.2);
+      padding:28px;
       border-radius:14px;
-      padding:24px;
       text-align:center;
       position:relative;
       cursor:pointer;
+      margin-bottom:12px;
       user-select:none;
     }
 
-    .upload-area input[type=file]{
+    /* SAFARI input fix: full click area */
+    #fileInput{
       position:absolute;
       inset:0;
       width:100%;
       height:100%;
       opacity:0;
       cursor:pointer;
-      z-index:10;
+      z-index:9999;
     }
 
     video{
       width:100%;
       max-height:260px;
-      background:black;
       border-radius:10px;
-      margin-top:12px;
+      background:black;
+      margin-top:14px;
     }
 
-    .btn{
-      background:var(--accent);
-      border:none;
-      color:white;
+    label{
+      display:block;
+      margin-top:12px;
+      font-size:14px;
       font-weight:600;
-      padding:12px 18px;
-      border-radius:8px;
-      cursor:pointer;
-      margin-top:10px;
-      width:100%;
     }
 
     input, select{
       width:100%;
-      padding:8px;
-      border-radius:6px;
-      border:none;
+      padding:10px;
       background:rgba(255,255,255,0.08);
       color:white;
+      border:none;
+      border-radius:8px;
+      margin-top:4px;
       font-size:14px;
-      margin-top:6px;
+    }
+
+    .btn{
+      margin-top:16px;
+      width:100%;
+      padding:12px;
+      border:none;
+      border-radius:10px;
+      font-weight:700;
+      background:var(--accent);
+      color:white;
+      cursor:pointer;
     }
 
     .progress{
-      height:10px;
+      height:12px;
       background:rgba(255,255,255,0.1);
       border-radius:999px;
       overflow:hidden;
-      margin-top:10px;
+      margin-top:12px;
     }
-
     .progress i{
       height:100%;
       width:0%;
+      background:linear-gradient(90deg,#7fa7ff,#4f46e5);
       display:block;
-      background:linear-gradient(90deg,#5f9fff,#4f46e5);
     }
 
     #log{
-      height:280px;
+      height:300px;
+      background:rgba(0,0,0,0.25);
+      padding:12px;
+      border-radius:12px;
       overflow:auto;
-      background:rgba(0,0,0,0.3);
-      padding:10px;
-      border-radius:8px;
       font-family:monospace;
       font-size:13px;
     }
-
   </style>
 </head>
 
 <body>
-  <div class="container">
+<div class="container">
 
-    <header>
-      <h1>JujuWeb — Video Editor</h1>
-      <div class="subtitle">Trim & add text overlay langsung di browser (Safari FIX)</div>
-    </header>
+  <h1>JujuWeb — Video Editor</h1>
+  <div class="subtitle">Trim & Tambah Teks • Berjalan 100% di Browser</div>
 
-    <div class="card">
-      <div class="flex">
+  <div class="card">
+    <div class="flex">
 
-        <!-- LEFT PANEL -->
-        <div style="flex:1">
+      <!-- LEFT SIDE -->
+      <div style="flex:1">
 
-          <!-- Upload Area (FIX SAFARI) -->
-          <div class="upload-area">
-            <div style="font-weight:700;font-size:16px;margin-bottom:6px">
-              Tarik & lepas videomu di sini
-            </div>
-            <div style="font-size:13px;color:var(--muted);margin-bottom:10px">
-              Atau ketuk untuk pilih video (Safari FIX)
-            </div>
+        <div class="upload-area" id="uploadArea">
+          <div style="font-weight:700;font-size:16px">Tarik & lepas videomu di sini</div>
+          <div style="font-size:13px;color:var(--muted)">Atau ketuk untuk pilih (Safari FIX)</div>
 
-            <input id="fileInput" type="file" accept="video/*">
-          </div>
-
-          <div id="editor" style="margin-top:16px; display:none">
-
-            <video id="video" controls></video>
-
-            <label>Start (detik)</label>
-            <input id="startSec" type="number" value="0" step="0.1">
-
-            <label>End (detik)</label>
-            <input id="endSec" type="number" value="5" step="0.1">
-
-            <label>Teks overlay</label>
-            <input id="overlayText" placeholder="Masukkan teks...">
-
-            <label>Posisi teks</label>
-            <select id="overlayPos">
-              <option value="10:10">Kiri Atas</option>
-              <option value="10:main_h-40">Kiri Bawah</option>
-              <option value="main_w-10:10">Kanan Atas</option>
-              <option value="main_w-10:main_h-40">Kanan Bawah</option>
-            </select>
-
-            <button id="btnExport" class="btn">Export Video</button>
-
-            <div class="progress"><i id="progressBar"></i></div>
-            <div id="status" style="font-size:13px;color:var(--muted);margin-top:4px">
-              Menunggu...
-            </div>
-          </div>
+          <input id="fileInput" type="file" accept="video/*">
         </div>
 
-        <!-- RIGHT PANEL -->
-        <div style="flex:1">
-          <label style="font-size:14px;font-weight:600;color:white">Log & Tips</label>
-          <div id="log"></div>
+        <!-- Editor will appear here -->
+        <div id="editor" style="display:none">
+
+          <video id="video" controls></video>
+
+          <label>Start (detik)</label>
+          <input id="startSec" type="number" step="0.1" value="0">
+
+          <label>End (detik)</label>
+          <input id="endSec" type="number" step="0.1" value="5">
+
+          <label>Teks Overlay</label>
+          <input id="overlayText" placeholder="Masukkan teks...">
+
+          <label>Posisi Teks</label>
+          <select id="overlayPos">
+            <option value="10:10">Kiri Atas</option>
+            <option value="10:main_h-40">Kiri Bawah</option>
+            <option value="main_w-10:10">Kanan Atas</option>
+            <option value="main_w-10:main_h-40">Kanan Bawah</option>
+          </select>
+
+          <button class="btn" id="btnExport">Export Video</button>
+
+          <div class="progress">
+            <i id="progressBar"></i>
+          </div>
+
+          <div id="status" style="margin-top:6px;font-size:13px;color:var(--muted)">Menunggu...</div>
         </div>
 
       </div>
+
+      <!-- RIGHT SIDE -->
+      <div style="flex:1">
+        <label style="font-size:14px;font-weight:700">Log & Tips</label>
+        <div id="log"></div>
+      </div>
+
     </div>
   </div>
 
-  <!-- FFmpeg -->
-  <script type="module">
-    import { createFFmpeg, fetchFile } from "https://cdn.jsdelivr.net/npm/@ffmpeg/ffmpeg@0.11.7/dist/ffmpeg.min.js";
+</div>
 
-    const fileInput = document.getElementById('fileInput');
-    const video = document.getElementById('video');
-    const editor = document.getElementById('editor');
-    const startSec = document.getElementById('startSec');
-    const endSec = document.getElementById('endSec');
-    const overlayText = document.getElementById('overlayText');
-    const overlayPos = document.getElementById('overlayPos');
-    const btnExport = document.getElementById('btnExport');
-    const statusEl = document.getElementById('status');
-    const progressBar = document.getElementById('progressBar');
-    const log = document.getElementById('log');
 
-    let ffmpeg = null;
-    let currentFile = null;
+<!-- FFmpeg -->
+<script type="module">
+  import { createFFmpeg, fetchFile } 
+    from "https://cdn.jsdelivr.net/npm/@ffmpeg/ffmpeg@0.11.7/dist/ffmpeg.min.js";
 
-    const addLog = t => {
-      log.innerHTML += t + "<br>";
-      log.scrollTop = log.scrollHeight;
-    };
+  const video = document.getElementById("video");
+  const editor = document.getElementById("editor");
+  const log = document.getElementById("log");
+  const statusEl = document.getElementById("status");
+  const progressBar = document.getElementById("progressBar");
+  const fileInput = document.getElementById("fileInput");
 
-    fileInput.onchange = e => {
-      const file = e.target.files[0];
-      if (!file) return;
-      currentFile = file;
-      video.src = URL.createObjectURL(file);
-      editor.style.display = "block";
-      addLog("Video dimuat: " + file.name);
-    };
+  let ffmpeg = null;
+  let currentFile = null;
 
-    async function loadFFmpeg() {
-      if (ffmpeg) return ffmpeg;
-      addLog("Memuat FFmpeg...");
-      statusEl.textContent = "Memuat FFmpeg (sekali saja)...";
+  const addLog = txt => {
+    log.innerHTML += txt + "<br>";
+    log.scrollTop = log.scrollHeight;
+  };
 
-      ffmpeg = createFFmpeg({
-        log: true,
-        corePath: "https://cdn.jsdelivr.net/npm/@ffmpeg/core@0.11.1/dist/ffmpeg-core.js"
-      });
+  /* FILE UPLOAD FIX */
+  fileInput.addEventListener("change", e => {
+    const file = e.target.files[0];
+    if (!file) return;
 
-      ffmpeg.setProgress(({ ratio }) => {
-        progressBar.style.width = Math.round(ratio * 100) + "%";
-      });
+    currentFile = file;
+    video.src = URL.createObjectURL(file);
+    video.load();
 
-      await ffmpeg.load();
-      addLog("FFmpeg siap.");
-      return ffmpeg;
+    editor.style.display = "block";
+    addLog("Video dipilih: " + file.name);
+  });
+
+  async function loadFFmpeg() {
+    if (ffmpeg) return ffmpeg;
+
+    addLog("Memuat FFmpeg...");
+    statusEl.textContent = "Memuat FFmpeg...";
+
+    ffmpeg = createFFmpeg({
+      log: true,
+      corePath:
+        "https://cdn.jsdelivr.net/npm/@ffmpeg/core@0.11.1/dist/ffmpeg-core.js"
+    });
+
+    ffmpeg.setProgress(({ ratio }) => {
+      progressBar.style.width = Math.round(ratio * 100) + "%";
+    });
+
+    await ffmpeg.load();
+    addLog("FFmpeg siap.");
+    return ffmpeg;
+  }
+
+  document.getElementById("btnExport").onclick = async () => {
+    if (!currentFile) return alert("Upload video terlebih dahulu!");
+
+    await loadFFmpeg();
+
+    const s = parseFloat(document.getElementById("startSec").value);
+    const e = parseFloat(document.getElementById("endSec").value);
+    const dur = e - s;
+
+    const txt = document.getElementById("overlayText").value.trim();
+    const pos = document.getElementById("overlayPos").value;
+
+    statusEl.textContent = "Menulis file...";
+    addLog("Menulis input.mp4");
+
+    ffmpeg.FS("writeFile","input.mp4",await fetchFile(currentFile));
+
+    let args = ["-ss",String(s),"-i","input.mp4","-t",String(dur)];
+
+    if (txt){
+      const esc = txt.replace(/[:\\']/g,m=>'\\'+m);
+      args.push(
+        "-vf",
+        `drawtext=text='${esc}':x=${pos.split(":")[0]}:y=${pos.split(":")[1]}:fontsize=32:fontcolor=white:box=1:boxcolor=0x00000099`
+      );
     }
 
-    btnExport.onclick = async () => {
-      if (!currentFile) return alert("Upload video dulu.");
+    args.push("-c:v","libx264","-preset","veryfast","-c:a","aac","output.mp4");
 
-      await loadFFmpeg();
+    addLog("Memproses video...");
+    await ffmpeg.run(...args);
 
-      const s = parseFloat(startSec.value);
-      const e = parseFloat(endSec.value);
-      const dur = e - s;
+    addLog("Mengambil output...");
+    const data = ffmpeg.FS("readFile","output.mp4");
+    const blob = new Blob([data.buffer], {type:"video/mp4"});
+    const url = URL.createObjectURL(blob);
 
-      statusEl.textContent = "Menyiapkan file...";
-      await ffmpeg.FS("writeFile", "input.mp4", await fetchFile(currentFile));
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "juju-output.mp4";
+    a.click();
 
-      const txt = overlayText.value.trim();
-      let args = [
-        "-ss", String(s),
-        "-i", "input.mp4",
-        "-t", String(dur),
-      ];
-
-      if (txt) {
-        const esc = txt.replace(/[:\\']/g, m => '\\' + m);
-        const pos = overlayPos.value;
-        args.push(
-          "-vf",
-          `drawtext=text='${esc}':x=${pos.split(":")[0]}:y=${pos.split(":")[1]}:fontsize=32:fontcolor=white:box=1:boxcolor=0x00000099`
-        );
-      }
-
-      args.push("-c:v","libx264","-preset","veryfast","-c:a","aac","output.mp4");
-
-      addLog("Memproses...");
-      await ffmpeg.run(...args);
-
-      addLog("Mengambil file hasil...");
-      const data = ffmpeg.FS("readFile","output.mp4");
-      const blob = new Blob([data.buffer], { type:"video/mp4" });
-      const url = URL.createObjectURL(blob);
-
-      const a = document.createElement("a");
-      a.href = url;
-      a.download = "juju-output.mp4";
-      a.click();
-
-      statusEl.textContent = "Selesai!";
-      addLog("Export selesai.");
-    }
-  </script>
+    statusEl.textContent = "Selesai!";
+    addLog("Export selesai.");
+  };
+</script>
 
 </body>
 </html>
